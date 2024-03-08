@@ -14,10 +14,10 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
 import { z } from 'zod'
 
-import { registerSchema } from '../../validators/registerSchema'
-import { Field } from '../forms/Field'
-import { SocialLogin } from '../forms/SocialLogin'
-import { Form } from '../ui/form'
+import { Field } from '../../../components/forms/Field'
+import { SocialLogin } from '../../../components/forms/SocialLogin'
+import { Form } from '../../../components/ui/form'
+import { registerSchema } from '../../../validators/registerSchema'
 
 type Input = z.infer<typeof registerSchema>
 

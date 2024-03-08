@@ -1,4 +1,4 @@
-import { LoginForm } from '@/components/auth/LoginForm'
+import { LoginForm } from '@/app/(auth)/_components/LoginForm'
 import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 

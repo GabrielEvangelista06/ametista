@@ -15,6 +15,10 @@ export const authConfig: NextAuthOptions = {
   },
   pages: {
     signIn: '/login',
+    signOut: '/login',
+    error: '/login',
+    verifyRequest: '/login',
+    newUser: '/app',
   },
   secret: process.env.NEXTAUTH_SECRET as string,
   providers: [
