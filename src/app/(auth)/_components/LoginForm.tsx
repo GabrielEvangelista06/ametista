@@ -61,9 +61,7 @@ export function LoginForm() {
         <div className="md:flex md:items-center md:justify-center">
           <div className="w-full p-8 md:w-1/2">
             <div className="mt-6">
-              <h2 className="text-2xl font-bold text-primary">
-                Realizar Login
-              </h2>
+              <h2 className="text-2xl font-bold text-primary">Login</h2>
               <div className="mt-8">
                 <SocialLogin labelGoogle="Logar com Google" />
               </div>
