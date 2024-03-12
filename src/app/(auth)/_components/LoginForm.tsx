@@ -46,7 +46,7 @@ export function LoginForm() {
         variant: 'destructive',
       })
     } else {
-      router.push('/admin')
+      router.push('/app')
     }
   }
 
