@@ -1,6 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 
 import { cn } from '@/lib/utils'
+import { motion } from 'framer-motion'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type DashboardSidebarGenericProps<T = any> = {
@@ -13,14 +16,14 @@ export function DashboardSidebar({
   className,
 }: DashboardSidebarGenericProps) {
   return (
-    <aside
-      className={cn([
-        'flex flex-col space-y-6 border-r border-border',
-        className,
-      ])}
+    <motion.aside
+      initial={{ x: -555 }}
+      animate={{ x: 0 }}
+      transition={{ duration: 0.5 }}
+      className={cn(['', className])}
     >
       {children}
-    </aside>
+    </motion.aside>
   )
 }
 
@@ -46,7 +49,9 @@ export function DashboardSidebarMain({
   children,
   className,
 }: DashboardSidebarGenericProps) {
-  return <main className={cn(['px-3', className])}>{children}</main>
+  return (
+    <motion.main className={cn(['px-3', className])}>{children}</motion.main>
+  )
 }
 
 export function DashboardSidebarNav({
@@ -101,7 +106,7 @@ export function DashboardSidebarNavLink({
     <Link
       href={href}
       className={cn([
-        'flex items-center space-x-2 rounded-md px-3 py-2 text-xs transition-colors duration-200 ease-in-out',
+        'mt-1 flex items-center space-x-2 rounded-md px-3 py-2 text-sm transition-colors duration-200 ease-in-out lg:mt-0',
         active && 'bg-secondary',
         className,
       ])}

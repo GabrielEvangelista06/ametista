@@ -12,11 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import {
-  ExitIcon,
-  MixerHorizontalIcon,
-  RocketIcon,
-} from '@radix-ui/react-icons'
+import { LogOutIcon, RocketIcon, Settings2 } from 'lucide-react'
 
 type UserDropdownProps = {
   user: (Session['user'] & { username: string }) | undefined
@@ -62,7 +58,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <MixerHorizontalIcon className="mr-3 h-3 w-3" />
+            <Settings2 className="mr-3 h-3 w-3" />
             Configurações
           </DropdownMenuItem>
           <DropdownMenuItem>
@@ -71,7 +67,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>
-          <ExitIcon className="mr-3 h-3 w-3" /> Log out
+          <LogOutIcon className="mr-3 h-3 w-3" /> Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
