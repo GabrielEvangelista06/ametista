@@ -15,7 +15,7 @@ import {
   DashboardSidebarNavHeaderTitle,
   DashboardSidebarNavLink,
   DashboardSidebarNavMain,
-} from '@/components/dashboard/DashboardSidebar'
+} from '@/components/layouts/Sidebar'
 import { ModeToggle } from '@/components/ModeToggle'
 import { Button } from '@/components/ui/button'
 import { Cross2Icon, HamburgerMenuIcon } from '@radix-ui/react-icons'
@@ -64,9 +64,9 @@ export function MainSidebar({ user }: MainSidebarProps) {
         <DashboardSidebarHeader>
           <motion.div
             className="mt-8 flex h-12 items-center justify-between lg:mt-0"
-            initial={{ y: -100 }}
-            animate={{ y: 0 }}
-            transition={{ duration: 1 }}
+            initial={{ x: -300 }}
+            animate={{ x: 0 }}
+            transition={{ duration: 0.5 }}
           >
             <ModeToggle />
             <Image
@@ -81,11 +81,16 @@ export function MainSidebar({ user }: MainSidebarProps) {
         <DashboardSidebarMain className="flex flex-grow flex-col">
           <DashboardSidebarNav>
             <DashboardSidebarNavMain>
-              <DashboardSidebarNavLink href="/app" active={isActive('/app')}>
+              <DashboardSidebarNavLink
+                index={1}
+                href="/app"
+                active={isActive('/app')}
+              >
                 <LayoutDashboardIcon className="mr-3 h-3 w-3" />
                 Dashboard
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
+                index={2}
                 href="/app/transactions"
                 active={isActive('/app/transactions')}
               >
@@ -93,6 +98,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
                 Transações
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
+                index={3}
                 href="/app/tags"
                 active={isActive('/app/tags')}
               >
@@ -100,6 +106,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
                 Contas
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
+                index={4}
                 href="/app/goals"
                 active={isActive('/app/goals')}
               >
@@ -107,6 +114,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
                 Metas
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
+                index={5}
                 href="/app/tags"
                 active={isActive('/app/tags')}
               >
@@ -123,10 +131,25 @@ export function MainSidebar({ user }: MainSidebarProps) {
               </DashboardSidebarNavHeaderTitle>
             </DashboardSidebarNavHeader>
             <DashboardSidebarNavMain>
-              <DashboardSidebarNavLink href="/" active={isActive('/')}>
+              <DashboardSidebarNavLink
+                index={6}
+                href="/"
+                active={isActive('/')}
+              >
+                Dar Feedback
+              </DashboardSidebarNavLink>
+              <DashboardSidebarNavLink
+                index={7}
+                href="/"
+                active={isActive('/')}
+              >
                 Precisa de ajuda?
               </DashboardSidebarNavLink>
-              <DashboardSidebarNavLink href="/" active={isActive('/')}>
+              <DashboardSidebarNavLink
+                index={8}
+                href="/"
+                active={isActive('/')}
+              >
                 Site
               </DashboardSidebarNavLink>
             </DashboardSidebarNavMain>
