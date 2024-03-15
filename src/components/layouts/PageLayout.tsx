@@ -9,10 +9,7 @@ export type DashboardPageGenericProps<T = any> = {
   className?: string
 } & T
 
-export function DashboardPage({
-  children,
-  className,
-}: DashboardPageGenericProps) {
+export function LayoutPage({ children, className }: DashboardPageGenericProps) {
   return (
     <motion.section
       initial={{ opacity: 0 }}
@@ -31,7 +28,7 @@ export function DashboardPage({
   )
 }
 
-export function DashboardPageHeader({
+export function LayoutPageHeader({
   children,
   className,
 }: DashboardPageGenericProps) {
@@ -42,7 +39,7 @@ export function DashboardPageHeader({
   )
 }
 
-export function DashboardPageHeaderTitle({
+export function LayoutPageHeaderTitle({
   children,
   className,
 }: DashboardPageGenericProps) {
@@ -53,14 +50,14 @@ export function DashboardPageHeaderTitle({
   )
 }
 
-export function DashboardPageHeaderNav({
+export function LayoutPageHeaderNav({
   children,
   className,
 }: DashboardPageGenericProps) {
   return <nav className={cn(['', className])}>{children}</nav>
 }
 
-export function DashboardPageMain({
+export function LayoutPageMain({
   children,
   className,
 }: DashboardPageGenericProps) {
