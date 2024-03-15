@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { RegisterFieldNameEnum } from '@/enums/RegisterFieldNameEnum'
+import { RegisterFieldNameEnum } from '@/enums/AuthFieldNameEnum'
 import { api } from '@/lib/api'
 import { FieldProps } from '@/props/forms/FieldProps'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,9 +15,9 @@ import { motion } from 'framer-motion'
 import { z } from 'zod'
 
 import { Field } from '../../../components/forms/Field'
-import { SocialLogin } from '../../../components/forms/SocialLogin'
 import { Form } from '../../../components/ui/form'
 import { registerSchema } from '../../../validators/registerSchema'
+import { SocialLogin } from './SocialLogin'
 
 type Input = z.infer<typeof registerSchema>
 
@@ -99,8 +99,14 @@ export function SignupForm() {
                       type="password"
                     />
                   </div>
-                  <Button className="mt-8 w-full" type="submit">
-                    Criar Conta
+                  <Button
+                    className="mt-8 w-full"
+                    type="submit"
+                    disabled={form.formState.isSubmitting}
+                  >
+                    {form.formState.isSubmitting
+                      ? 'Criando Conta...'
+                      : 'Criar Conta'}
                   </Button>
                 </form>
               </Form>

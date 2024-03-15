@@ -1,5 +1,4 @@
 import { LoginForm } from '@/app/(auth)/_components/LoginForm'
-import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 
 export default function LoginPage() {
@@ -7,11 +6,9 @@ export default function LoginPage() {
     <div className="text-center">
       <Header />
 
-      <main className="md:mt-10 lg:mt-0 2xl:mt-16">
+      <main>
         <LoginForm />
       </main>
-
-      <Footer />
     </div>
   )
 }

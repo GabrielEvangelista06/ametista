@@ -8,15 +8,15 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { RegisterFieldNameEnum } from '@/enums/RegisterFieldNameEnum'
+import { RegisterFieldNameEnum } from '@/enums/AuthFieldNameEnum'
 import { loginSchema } from '@/validators/loginSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
 import { z } from 'zod'
 
 import { Field } from '../../../components/forms/Field'
-import { SocialLogin } from '../../../components/forms/SocialLogin'
 import { Form } from '../../../components/ui/form'
+import { SocialLogin } from './SocialLogin'
 
 type Input = z.infer<typeof loginSchema>
 
@@ -90,8 +90,12 @@ export function LoginForm() {
                       type="password"
                     />
                   </div>
-                  <Button className="mt-8 w-full" type="submit">
-                    Entrar
+                  <Button
+                    className="mt-8 w-full"
+                    type="submit"
+                    disabled={form.formState.isSubmitting}
+                  >
+                    {form.formState.isSubmitting ? 'Entrando...' : 'Entrar'}
                   </Button>
                 </form>
               </Form>
