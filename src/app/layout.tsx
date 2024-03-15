@@ -1,15 +1,11 @@
 import type { Metadata } from 'next'
-import localFont from 'next/font/local'
 
 import { Toaster } from '@/components/ui/toaster'
+import { GeistSans } from 'geist/font/sans'
 
 import NextAuthSessionProvider from '../../providers/NextAuthSessionProvider'
 import { ThemeProvider } from '../../providers/theme-provider'
 import './globals.css'
-
-const myFont = localFont({
-  src: './../../fonts/CalSans-SemiBold.woff2',
-})
 
 export const metadata: Metadata = {
   title: 'Ametista',
@@ -23,7 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-br" suppressHydrationWarning>
-      <body className={myFont.className}>
+      <body className={GeistSans.className}>
         <NextAuthSessionProvider>
           <ThemeProvider
             attribute="class"

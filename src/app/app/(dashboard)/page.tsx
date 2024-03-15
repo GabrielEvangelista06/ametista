@@ -1,14 +1,53 @@
-import { getServerSession } from 'next-auth'
+import {
+  DashboardPage,
+  DashboardPageHeader,
+  DashboardPageHeaderTitle,
+  DashboardPageMain,
+} from '@/components/layouts/PageLayout'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
 
-import { authConfig } from '@/lib/auth'
+import { DashboardCards } from './_components/DashboardCards'
+import { DashboardCharts } from './_components/DashboardChart'
+import { DashboardLastTransactions } from './_components/DashboardLastTransactions'
 
-import { UserInfo } from '../_components/UserInfo'
-
-export default async function AppPage() {
-  const session = await getServerSession(authConfig)
+export default function AppPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <UserInfo user={session?.user} />
-    </main>
+    <DashboardPage>
+      <DashboardPageHeader>
+        <DashboardPageHeaderTitle>Dashboard</DashboardPageHeaderTitle>
+      </DashboardPageHeader>
+      <DashboardPageMain className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <DashboardCards />
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          <Card className="col-span-4">
+            <CardHeader>
+              <CardTitle>Gastos mensais</CardTitle>
+            </CardHeader>
+            <CardContent className="pl-2">
+              <DashboardCharts />
+            </CardContent>
+          </Card>
+          <Card className="col-span-3">
+            <CardHeader>
+              <CardTitle>Últimas Transações</CardTitle>
+              <CardDescription>
+                Você fez 20 transações no Último mês.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <DashboardLastTransactions />
+            </CardContent>
+          </Card>
+        </div>
+      </DashboardPageMain>
+    </DashboardPage>
   )
 }

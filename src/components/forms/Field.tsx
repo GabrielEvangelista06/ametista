@@ -5,11 +5,17 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { FieldProps } from '@/props/forms/FieldProps'
+import { AuthFieldProps } from '@/props/forms/FieldProps'
 
 import { Input } from '../ui/input'
 
-export function Field({ form, label, name, placeholder, type }: FieldProps) {
+export function Field({
+  form,
+  label,
+  name,
+  placeholder,
+  type,
+}: AuthFieldProps) {
   return (
     <FormField
       control={form.control}

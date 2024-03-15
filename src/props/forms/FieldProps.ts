@@ -1,8 +1,8 @@
 import { UseFormReturn } from 'react-hook-form'
 
-import { RegisterFieldNameEnum } from '@/enums/RegisterFieldNameEnum'
+import { AuthFieldNameEnum } from '@/enums/AuthFieldNameEnum'
 
-export interface FieldProps {
+export interface AuthFieldProps {
   form: UseFormReturn<
     {
       username?: string | undefined
@@ -17,7 +17,7 @@ export interface FieldProps {
       password: string
     }
   >
-  name: RegisterFieldNameEnum
+  name: AuthFieldNameEnum
   label?: string
   placeholder: string
   type: string

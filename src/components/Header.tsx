@@ -20,7 +20,7 @@ export function Header() {
         src={Logo}
         width={75}
         height={75}
-        alt="Logo da Budget"
+        alt="Logo Ametista"
         className="mr-1 mt-1"
       />
     </motion.header>

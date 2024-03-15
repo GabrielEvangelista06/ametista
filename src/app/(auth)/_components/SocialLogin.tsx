@@ -1,8 +1,8 @@
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 
-import { ChromeIcon } from '../icons/ChromeIcon'
-import { Button } from '../ui/button'
+import { ChromeIcon } from '../../../components/icons/ChromeIcon'
+import { Button } from '../../../components/ui/button'
 
 interface SocialLoginProps {
   labelGoogle: string
