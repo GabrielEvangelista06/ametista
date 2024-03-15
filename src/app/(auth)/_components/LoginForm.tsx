@@ -8,7 +8,7 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { RegisterFieldNameEnum } from '@/enums/AuthFieldNameEnum'
+import { AuthFieldNameEnum } from '@/enums/AuthFieldNameEnum'
 import { loginSchema } from '@/validators/loginSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
@@ -78,14 +78,14 @@ export function LoginForm() {
                   <div className="space-y-4">
                     <Field
                       form={form}
-                      name={RegisterFieldNameEnum.EMAIL}
+                      name={AuthFieldNameEnum.EMAIL}
                       placeholder="E-mail"
                       type="email"
                     />
 
                     <Field
                       form={form}
-                      name={RegisterFieldNameEnum.PASSWORD}
+                      name={AuthFieldNameEnum.PASSWORD}
                       placeholder="Senha"
                       type="password"
                     />

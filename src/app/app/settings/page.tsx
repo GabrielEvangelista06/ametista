@@ -3,7 +3,7 @@ import {
   DashboardPageHeader,
   DashboardPageHeaderTitle,
   DashboardPageMain,
-} from '@/components/dashboard/DashboardPage'
+} from '@/components/layouts/PageLayout'
 
 export default function SettingsPage() {
   return (

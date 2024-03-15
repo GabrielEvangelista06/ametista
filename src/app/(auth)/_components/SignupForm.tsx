@@ -7,9 +7,9 @@ import { useForm } from 'react-hook-form'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useToast } from '@/components/ui/use-toast'
-import { RegisterFieldNameEnum } from '@/enums/AuthFieldNameEnum'
+import { AuthFieldNameEnum } from '@/enums/AuthFieldNameEnum'
 import { api } from '@/lib/api'
-import { FieldProps } from '@/props/forms/FieldProps'
+import { AuthFieldProps } from '@/props/forms/FieldProps'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
 import { z } from 'zod'
@@ -79,22 +79,22 @@ export function SignupForm() {
                 <form id="registerForm" onSubmit={form.handleSubmit(onSubmit)}>
                   <div className="space-y-4">
                     <Field
-                      form={form as FieldProps['form']}
-                      name={RegisterFieldNameEnum.USERNAME}
+                      form={form as AuthFieldProps['form']}
+                      name={AuthFieldNameEnum.USERNAME}
                       placeholder="Nome de usuário"
                       type="text"
                     />
 
                     <Field
-                      form={form as FieldProps['form']}
-                      name={RegisterFieldNameEnum.EMAIL}
+                      form={form as AuthFieldProps['form']}
+                      name={AuthFieldNameEnum.EMAIL}
                       placeholder="E-mail"
                       type="email"
                     />
 
                     <Field
-                      form={form as FieldProps['form']}
-                      name={RegisterFieldNameEnum.PASSWORD}
+                      form={form as AuthFieldProps['form']}
+                      name={AuthFieldNameEnum.PASSWORD}
                       placeholder="Senha"
                       type="password"
                     />
