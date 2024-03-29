@@ -74,6 +74,7 @@ export const authConfig: NextAuthOptions = {
         return {
           ...token,
           username: user.username,
+          id: user.id,
         }
       }
       return token
@@ -84,6 +85,7 @@ export const authConfig: NextAuthOptions = {
         user: {
           ...session.user,
           username: token.username,
+          id: token.sub,
         },
       }
     },
