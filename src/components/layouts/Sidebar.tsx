@@ -125,7 +125,9 @@ export function DashboardSidebarFooter({
   className,
 }: DashboardSidebarGenericProps) {
   return (
-    <footer className={cn(['mt-auto border-t border-border p-6', className])}>
+    <footer
+      className={cn(['mt-auto truncate border-t border-border p-6', className])}
+    >
       {children}
     </footer>
   )

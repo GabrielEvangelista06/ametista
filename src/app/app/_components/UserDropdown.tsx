@@ -33,7 +33,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
             <AvatarFallback>{user.username || user.name}</AvatarFallback>
           </Avatar>
 
-          <div className="flex flex-1 flex-col space-y-1 truncate text-left">
+          <div className="flex flex-1 flex-col space-y-1 text-left">
             {user.username ||
               (user.name && (
                 <p className="text-sm font-medium leading-none">
