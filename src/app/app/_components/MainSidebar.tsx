@@ -119,7 +119,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
                 active={isActive('/app/tags')}
               >
                 <TagIcon className="mr-3 h-3 w-3" />
-                Tags
+                Categorias
               </DashboardSidebarNavLink>
             </DashboardSidebarNavMain>
           </DashboardSidebarNav>
