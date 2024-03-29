@@ -2,7 +2,7 @@
 
 import { getServerSession } from 'next-auth'
 
-import { defaultCategories } from '@/consts/defaultCategories'
+import { defaultCategories } from '@/constants/defaultCategories'
 import { Status } from '@/enums/Status'
 import { authConfig } from '@/lib/auth'
 import { db } from '@/lib/prisma'
@@ -144,6 +144,81 @@ export async function upsertIncomeTransaction(input: InputDefault) {
   const transaction = await db.transaction.create({
     data: {
       type: 'income',
+      amount: parseFloat(amount),
+      status: isPaid ? Status.COMPLETO : Status.PENDENTE,
+      description,
+      categoryId: category,
+      bankInfoId: bankAccount,
+      date,
+      isFixed,
+      userId: session?.user?.id || '',
+    },
+  })
+
+  return { error: null, data: transaction }
+}
+
+export async function upsertExpenseTransaction(input: InputDefault) {
+  const session = await getServerSession(authConfig)
+
+  if (!session?.user?.id) {
+    return {
+      error: 'Usuário não autorizado',
+      data: null,
+    }
+  }
+
+  const {
+    id,
+    amount,
+    isPaid,
+    description,
+    category,
+    bankAccount,
+    date,
+    isFixed,
+  } = input
+
+  if (input.id) {
+    const transaction = await db.transaction.findUnique({
+      where: {
+        id,
+        userId: session?.user?.id,
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    if (!transaction) {
+      return {
+        error: 'Transação não encontrada',
+        data: null,
+      }
+    }
+
+    const updatedTransaction = await db.transaction.update({
+      where: {
+        id,
+        userId: session?.user?.id,
+      },
+      data: {
+        amount: parseFloat(amount),
+        status: isPaid ? Status.COMPLETO : Status.PENDENTE,
+        description,
+        categoryId: category,
+        bankInfoId: bankAccount,
+        date,
+        isFixed,
+      },
+    })
+
+    return { error: null, data: updatedTransaction }
+  }
+
+  const transaction = await db.transaction.create({
+    data: {
+      type: 'expense',
       amount: parseFloat(amount),
       status: isPaid ? Status.COMPLETO : Status.PENDENTE,
       description,

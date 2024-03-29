@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { PopoverContent } from '@/components/ui/popover'
-import { defaultCategories } from '@/consts/defaultCategories'
+import { defaultCategories } from '@/constants/defaultCategories'
 import { cn } from '@/lib/utils'
 import { CaretSortIcon } from '@radix-ui/react-icons'
 import { Popover, PopoverTrigger } from '@radix-ui/react-popover'
