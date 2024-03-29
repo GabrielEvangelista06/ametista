@@ -1,19 +1,19 @@
 import {
-  LayoutPage,
-  LayoutPageHeader,
-  LayoutPageHeaderTitle,
-  LayoutPageMain,
+  PageLayout,
+  PageLayoutHeader,
+  PageLayoutHeaderTitle,
+  PageLayoutMain,
 } from '@/components/layouts/PageLayout'
 
 export default function SettingsPage() {
   return (
-    <LayoutPage>
-      <LayoutPageHeader>
-        <LayoutPageHeaderTitle>Configurações</LayoutPageHeaderTitle>
-      </LayoutPageHeader>
-      <LayoutPageMain>
+    <PageLayout>
+      <PageLayoutHeader>
+        <PageLayoutHeaderTitle>Configurações</PageLayoutHeaderTitle>
+      </PageLayoutHeader>
+      <PageLayoutMain>
         <h1>Configurações</h1>
-      </LayoutPageMain>
-    </LayoutPage>
+      </PageLayoutMain>
+    </PageLayout>
   )
 }
