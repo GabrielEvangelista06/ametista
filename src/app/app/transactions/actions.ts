@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 
 import { defaultCategories } from '@/constants/defaultCategories'
 import { Status } from '@/enums/Status'
+import { TransactionTypes } from '@/enums/TransactionTypes'
 import { authConfig } from '@/lib/auth'
 import { db } from '@/lib/prisma'
 import { deleteTransactionSchema } from '@/validators/deleteTransactionSchema'
@@ -45,7 +46,14 @@ export async function getUserTransactions() {
       return {
         ...transaction,
         bankInfoInstitution: bankInfo?.bankInstitution || 'Não informado',
-        type: transaction.type === 'income' ? 'Receita' : 'Despesa',
+        type:
+          transaction.type === TransactionTypes.INCOME
+            ? 'Receita'
+            : transaction.type === TransactionTypes.CARD_EXPENSE
+              ? 'Despesa de Cartão'
+              : transaction.type === TransactionTypes.TRANSFER
+                ? 'Transferência'
+                : 'Despesa',
         category: categoryName,
       }
     }),
@@ -77,6 +85,7 @@ export async function getUserCategories() {
       id: true,
       name: true,
       value: true,
+      categoryType: true,
     },
   })
 
@@ -143,7 +152,7 @@ export async function upsertIncomeTransaction(input: InputDefault) {
 
   const transaction = await db.transaction.create({
     data: {
-      type: 'income',
+      type: TransactionTypes.INCOME,
       amount: parseFloat(amount),
       status: isPaid ? Status.COMPLETO : Status.PENDENTE,
       description,
@@ -151,7 +160,7 @@ export async function upsertIncomeTransaction(input: InputDefault) {
       bankInfoId: bankAccount,
       date,
       isFixed,
-      userId: session?.user?.id || '',
+      userId: session.user.id,
     },
   })
 
@@ -218,7 +227,7 @@ export async function upsertExpenseTransaction(input: InputDefault) {
 
   const transaction = await db.transaction.create({
     data: {
-      type: 'expense',
+      type: TransactionTypes.EXPENSE,
       amount: parseFloat(amount),
       status: isPaid ? Status.COMPLETO : Status.PENDENTE,
       description,
@@ -226,7 +235,7 @@ export async function upsertExpenseTransaction(input: InputDefault) {
       bankInfoId: bankAccount,
       date,
       isFixed,
-      userId: session?.user?.id || '',
+      userId: session.user.id,
     },
   })
 

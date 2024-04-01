@@ -31,13 +31,14 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { toast } from '@/components/ui/use-toast'
+import { defaultCategories } from '@/constants/defaultCategories'
 import { cardExpenseSchema } from '@/validators/cardExpenseSchema'
 import { incomeSchema } from '@/validators/incomeSchema'
 import { transferSchema } from '@/validators/transferSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDownIcon } from 'lucide-react'
 
-import { upsertIncomeTransaction } from '../actions'
+import { upsertExpenseTransaction, upsertIncomeTransaction } from '../actions'
 import { BankAccountSelect } from './BankAccountSelect'
 import { BooleanSwitchField } from './BooleanSwitchField'
 import { CategorySelect } from './CategorySelect'
@@ -80,6 +81,12 @@ export function IncomeUpsertSheet({
     })
   })
 
+  const allCategories = defaultCategories.concat(dataCategories || [])
+
+  const filteredCategories = allCategories?.filter(
+    (category) => category.categoryType === 'income',
+  )
+
   return (
     <Sheet>
       <SheetTrigger className="w-full" asChild>
@@ -99,7 +106,7 @@ export function IncomeUpsertSheet({
                 <FormItem>
                   <FormLabel>Valor da receita</FormLabel>
                   <FormControl>
-                    <Input placeholder="0,00" {...field} />
+                    <Input placeholder="Digite somente números" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -127,7 +134,7 @@ export function IncomeUpsertSheet({
               )}
             />
 
-            <CategorySelect form={form} categories={dataCategories || []} />
+            <CategorySelect form={form} categories={filteredCategories || []} />
 
             <BankAccountSelect
               name="bankAccount"
@@ -155,6 +162,8 @@ export function ExpenseUpsertSheet({
 }: TransactionUpsertSheetProps) {
   const ref = useRef<HTMLDivElement>(null)
 
+  const router = useRouter()
+
   const form = useForm<InputDefault>({
     resolver: zodResolver(incomeSchema),
     defaultValues: {
@@ -163,9 +172,24 @@ export function ExpenseUpsertSheet({
     },
   })
 
-  const onSubmit = form.handleSubmit((data) => {
-    console.log(data)
+  const onSubmit = form.handleSubmit(async (data) => {
+    await upsertExpenseTransaction(data)
+
+    router.refresh()
+
+    ref.current?.click()
+
+    toast({
+      title: 'Despesa adicionada',
+      description: 'Despesa adicionada com sucesso',
+    })
   })
+
+  const allCategories = defaultCategories.concat(dataCategories || [])
+
+  const filteredCategories = allCategories?.filter(
+    (category) => category.categoryType === 'expense',
+  )
 
   return (
     <Sheet>
@@ -183,7 +207,7 @@ export function ExpenseUpsertSheet({
               form={form}
               name="amount"
               label="Valor da despesa"
-              placeholder="0,00"
+              placeholder="Digite somente números"
             />
 
             <BooleanSwitchField
@@ -200,7 +224,7 @@ export function ExpenseUpsertSheet({
               placeholder="Adicione a descrição"
             />
 
-            <CategorySelect form={form} categories={dataCategories || []} />
+            <CategorySelect form={form} categories={filteredCategories || []} />
 
             <BankAccountSelect
               name="bankAccount"
@@ -211,15 +235,6 @@ export function ExpenseUpsertSheet({
 
             <DateSelect form={form} />
 
-            <PopoverMoreDetails>
-              <BooleanSwitchField
-                form={form}
-                label="Despesa fixa"
-                name="isFixed"
-              />
-
-              <BooleanSwitchField form={form} label="Repetir" name="repeat" />
-            </PopoverMoreDetails>
             <SheetFooter className="mt-auto">
               <Button type="submit">Adicionar</Button>
             </SheetFooter>
@@ -263,7 +278,7 @@ export function CardExpenseUpsertSheet({
               form={form}
               name="amount"
               label="Valor da despesa"
-              placeholder="0,00"
+              placeholder="Digite somente números"
             />
 
             <GenericTransactionFormField
@@ -398,7 +413,7 @@ export function TransferUpsertSheet({
               form={form}
               name="amount"
               label="Valor da transferência"
-              placeholder="0,00"
+              placeholder="Digite somente números"
             />
 
             <GenericTransactionFormField
