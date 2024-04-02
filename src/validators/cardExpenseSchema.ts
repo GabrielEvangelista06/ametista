@@ -5,7 +5,6 @@ export const cardExpenseSchema = z.object({
   amount: z
     .string({ required_error: 'O valor da despesa é obrigatório' })
     .regex(/^\d+$/, { message: 'O valor precisa ser um número positivo' }),
-  isPaid: z.boolean().optional().default(false),
   date: z.date().optional(),
   description: z
     .string({ required_error: 'A descrição é obrigatória' })
