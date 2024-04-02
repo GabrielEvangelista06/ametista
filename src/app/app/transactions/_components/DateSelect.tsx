@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { addDays, format } from 'date-fns'
+import { pt } from 'date-fns/locale/pt'
 import { CalendarIcon } from 'lucide-react'
 
 import { DateSelectProps } from './types'
@@ -43,7 +44,9 @@ export function DateSelect({ form }: DateSelectProps) {
               >
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {field.value ? (
-                  format(field.value, 'dd/MM/yyyy')
+                  format(field.value, 'PPP', {
+                    locale: pt,
+                  })
                 ) : (
                   <span>Escolha uma data</span>
                 )}
