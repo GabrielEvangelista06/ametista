@@ -47,7 +47,7 @@ import {
 import { BankAccountSelect } from './BankAccountSelect'
 import { BooleanSwitchField } from './BooleanSwitchField'
 import { CategorySelect } from './CategorySelect'
-import { DateSelect } from './DataSelect'
+import { DateSelect } from './DateSelect'
 import { GenericTransactionFormField } from './GenericTransactionFormField'
 import {
   Bill,
