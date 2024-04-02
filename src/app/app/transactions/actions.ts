@@ -11,7 +11,11 @@ import { db } from '@/lib/prisma'
 import { deleteTransactionSchema } from '@/validators/deleteTransactionSchema'
 import { z } from 'zod'
 
-import { InputCardExpense, InputDefault } from './_components/types'
+import {
+  InputCardExpense,
+  InputDefault,
+  InputTransfer,
+} from './_components/types'
 
 export async function getUserTransactions() {
   const session = await getServerSession(authConfig)
@@ -121,13 +125,41 @@ export async function getUserBillsByCardId(cardId: string | undefined) {
   return bills
 }
 
+export async function getBankInfoByCardId(cardId: string) {
+  const bankInfoId = await db.card.findFirst({
+    where: {
+      id: cardId,
+    },
+    select: {
+      bankInfoId: true,
+    },
+  })
+
+  return bankInfoId
+}
+
+export async function getBankInfoById(bankInfoId: string) {
+  const session = await getServerSession(authConfig)
+
+  const bankInfo = await db.bankInfo.findUnique({
+    where: {
+      id: bankInfoId,
+      userId: session?.user?.id,
+    },
+  })
+
+  return bankInfo
+}
+
 export async function upsertIncomeTransaction(input: InputDefault) {
   const session = await getServerSession(authConfig)
 
   if (!session?.user?.id) {
     return {
-      error: 'Usuário não autorizado',
       data: null,
+      title: 'Erro ao criar receita',
+      message: 'Usuário não autorizado',
+      error: true,
     }
   }
 
@@ -142,7 +174,7 @@ export async function upsertIncomeTransaction(input: InputDefault) {
     isFixed,
   } = input
 
-  if (input.id) {
+  if (id) {
     const transaction = await db.transaction.findUnique({
       where: {
         id,
@@ -155,8 +187,10 @@ export async function upsertIncomeTransaction(input: InputDefault) {
 
     if (!transaction) {
       return {
-        error: 'Transação não encontrada',
         data: null,
+        title: 'Erro ao atualizar receita',
+        message: 'Receita não encontrada',
+        error: true,
       }
     }
 
@@ -176,7 +210,25 @@ export async function upsertIncomeTransaction(input: InputDefault) {
       },
     })
 
-    return { error: null, data: updatedTransaction }
+    if (updatedTransaction && isPaid) {
+      const bankInfo = await getBankInfoById(bankAccount)
+
+      if (bankInfo) {
+        bankInfo.currentBalance += parseFloat(amount)
+
+        await db.bankInfo.update({
+          where: { id: bankAccount },
+          data: { currentBalance: bankInfo.currentBalance },
+        })
+      }
+    }
+
+    return {
+      data: updatedTransaction,
+      title: 'Receita atualizada',
+      message: 'Receita atualizada com sucesso',
+      error: false,
+    }
   }
 
   const transaction = await db.transaction.create({
@@ -193,7 +245,25 @@ export async function upsertIncomeTransaction(input: InputDefault) {
     },
   })
 
-  return { error: null, data: transaction }
+  if (transaction && isPaid) {
+    const bankInfo = await getBankInfoById(bankAccount)
+
+    if (bankInfo) {
+      bankInfo.currentBalance += parseFloat(amount)
+
+      await db.bankInfo.update({
+        where: { id: bankAccount },
+        data: { currentBalance: bankInfo.currentBalance },
+      })
+    }
+  }
+
+  return {
+    data: transaction,
+    title: 'Receita criada',
+    message: 'Receita criada com sucesso',
+    error: false,
+  }
 }
 
 export async function upsertExpenseTransaction(input: InputDefault) {
@@ -201,8 +271,10 @@ export async function upsertExpenseTransaction(input: InputDefault) {
 
   if (!session?.user?.id) {
     return {
-      error: 'Usuário não autorizado',
       data: null,
+      title: 'Erro ao criar despesa',
+      message: 'Usuário não autorizado',
+      error: true,
     }
   }
 
@@ -230,8 +302,10 @@ export async function upsertExpenseTransaction(input: InputDefault) {
 
     if (!transaction) {
       return {
-        error: 'Transação não encontrada',
         data: null,
+        title: 'Erro ao atualizar despesa',
+        message: 'Transação não encontrada',
+        error: true,
       }
     }
 
@@ -251,7 +325,25 @@ export async function upsertExpenseTransaction(input: InputDefault) {
       },
     })
 
-    return { error: null, data: updatedTransaction }
+    if (updatedTransaction && isPaid) {
+      const bankInfo = await getBankInfoById(bankAccount)
+
+      if (bankInfo) {
+        bankInfo.currentBalance -= parseFloat(amount)
+
+        await db.bankInfo.update({
+          where: { id: bankAccount },
+          data: { currentBalance: bankInfo.currentBalance },
+        })
+      }
+    }
+
+    return {
+      data: updatedTransaction,
+      title: 'Despesa atualizada',
+      message: 'Despesa atualizada com sucesso',
+      error: false,
+    }
   }
 
   const transaction = await db.transaction.create({
@@ -268,20 +360,25 @@ export async function upsertExpenseTransaction(input: InputDefault) {
     },
   })
 
-  return { error: null, data: transaction }
-}
+  if (transaction && isPaid) {
+    const bankInfo = await getBankInfoById(bankAccount)
 
-export async function getBankInfoByCardId(cardId: string) {
-  const bankInfoId = await db.card.findFirst({
-    where: {
-      id: cardId,
-    },
-    select: {
-      bankInfoId: true,
-    },
-  })
+    if (bankInfo) {
+      bankInfo.currentBalance -= parseFloat(amount)
 
-  return bankInfoId
+      await db.bankInfo.update({
+        where: { id: bankAccount },
+        data: { currentBalance: bankInfo.currentBalance },
+      })
+    }
+  }
+
+  return {
+    data: transaction,
+    title: 'Despesa criada',
+    message: 'Despesa criada com sucesso',
+    error: false,
+  }
 }
 
 export async function upsertCardExpenseTransaction(input: InputCardExpense) {
@@ -289,16 +386,18 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
 
   if (!session?.user?.id) {
     return {
-      error: 'Usuário não autorizado',
       data: null,
+      title: 'Erro ao criar despesa de cartão',
+      message: 'Usuário não autorizado',
+      error: true,
     }
   }
 
-  const { id, amount, isPaid, description, category, date, bill, card } = input
+  const { id, amount, description, category, date, bill, card } = input
 
   const bankInfoId = await getBankInfoByCardId(card ?? '')
 
-  if (input.id) {
+  if (id) {
     const transaction = await db.transaction.findUnique({
       where: {
         id,
@@ -311,8 +410,10 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
 
     if (!transaction) {
       return {
-        error: 'Transação não encontrada',
         data: null,
+        title: 'Erro ao atualizar despesa de cartão',
+        message: 'Transação não encontrada',
+        error: false,
       }
     }
 
@@ -323,7 +424,7 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
       },
       data: {
         amount: parseFloat(amount),
-        status: isPaid ? Status.COMPLETED : Status.PENDING,
+        status: Status.PENDING,
         description,
         date,
         categoryId: category,
@@ -333,14 +434,19 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
       },
     })
 
-    return { error: null, data: updatedTransaction }
+    return {
+      data: updatedTransaction,
+      title: 'Despesa de cartão atualizada',
+      message: 'Despesa de cartão atualizada com sucesso',
+      error: false,
+    }
   }
 
   const transaction = await db.transaction.create({
     data: {
       type: TransactionTypes.CARD_EXPENSE,
       amount: parseFloat(amount),
-      status: isPaid ? Status.COMPLETED : Status.PENDING,
+      status: Status.PENDING,
       description,
       date,
       categoryId: category,
@@ -351,7 +457,134 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
     },
   })
 
-  return { error: null, data: transaction }
+  if (transaction) {
+    const bill = await db.bill.findUnique({
+      where: { id: transaction.billId ?? undefined },
+    })
+
+    if (bill) {
+      bill.amount += parseFloat(amount)
+
+      await db.bill.update({
+        where: { id: bill.id },
+        data: { amount: bill.amount },
+      })
+    }
+  }
+
+  return {
+    data: transaction,
+    title: 'Despesa de cartão criada',
+    message: 'Despesa de cartão criada com sucesso',
+    error: false,
+  }
+}
+
+export async function upsertTransferTransaction(input: InputTransfer) {
+  const session = await getServerSession(authConfig)
+
+  if (!session?.user?.id) {
+    return {
+      data: null,
+      title: 'Erro ao realizar transferência',
+      message: 'Usuário não autorizado',
+      error: true,
+    }
+  }
+
+  const { id, amount, description, accountId, destinationAccount, date } = input
+
+  const bankInfoSource = await db.bankInfo.findUnique({
+    where: { id: accountId, userId: session?.user?.id },
+  })
+
+  const bankInfoDestination = await db.bankInfo.findUnique({
+    where: { id: destinationAccount, userId: session?.user?.id },
+  })
+
+  if ((bankInfoSource?.currentBalance ?? 0) < parseFloat(amount)) {
+    return {
+      data: null,
+      title: 'Erro ao realizar transferência',
+      message: 'Saldo insuficiente',
+      error: true,
+    }
+  }
+
+  if (id) {
+    const transaction = await db.transaction.findUnique({
+      where: {
+        id,
+        userId: session?.user?.id,
+      },
+      select: {
+        id: true,
+      },
+    })
+
+    if (!transaction) {
+      return {
+        data: null,
+        title: 'Erro ao atualizar transferência',
+        message: 'Transação não encontrada',
+        error: true,
+      }
+    }
+
+    const updatedTransaction = await db.transaction.update({
+      where: {
+        id,
+        userId: session?.user?.id,
+      },
+      data: {
+        amount: parseFloat(amount),
+        description,
+        bankInfoId: accountId,
+        destinationBankInfoId: destinationAccount,
+        date,
+      },
+    })
+
+    return {
+      data: updatedTransaction,
+      title: 'Transferência atualizada',
+      message: 'Transferência atualizada com sucesso',
+    }
+  }
+
+  const transaction = await db.transaction.create({
+    data: {
+      type: TransactionTypes.TRANSFER,
+      status: Status.COMPLETED,
+      amount: parseFloat(amount),
+      description,
+      bankInfoId: accountId,
+      destinationBankInfoId: destinationAccount,
+      date,
+      userId: session.user.id,
+    },
+  })
+
+  if (transaction && bankInfoSource && bankInfoDestination) {
+    bankInfoSource.currentBalance -= parseFloat(amount)
+    bankInfoDestination.currentBalance += parseFloat(amount)
+
+    await db.bankInfo.update({
+      where: { id: accountId },
+      data: { currentBalance: bankInfoSource.currentBalance },
+    })
+
+    await db.bankInfo.update({
+      where: { id: destinationAccount },
+      data: { currentBalance: bankInfoDestination.currentBalance },
+    })
+  }
+
+  return {
+    data: transaction,
+    title: 'Transferência realizada',
+    message: 'Transferência realizada com sucesso',
+  }
 }
 
 export async function deleteTransaction(
