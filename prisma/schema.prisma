@@ -117,7 +117,7 @@ model Card {
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId      String
   bills       Bill[]
-  Transaction Transaction[]
+  transactions Transaction[]
 }
 
 model Bill {
@@ -131,7 +131,7 @@ model Bill {
 
   card        Card          @relation(fields: [cardId], references: [id], onDelete: Cascade)
   cardId      String
-  Transaction Transaction[]
+  transactions Transaction[]
 }
 
 model Category {
