@@ -13,7 +13,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -70,6 +69,12 @@ export function IncomeUpsertSheet({
   const form = useForm<InputDefault>({
     resolver: zodResolver(incomeSchema),
     defaultValues: {
+      amount: '',
+      isPaid: false,
+      description: '',
+      category: '',
+      bankAccount: '',
+      isFixed: false,
       date: new Date(),
     },
   })
@@ -113,18 +118,11 @@ export function IncomeUpsertSheet({
               <SheetTitle>Adicionar Receita</SheetTitle>
             </SheetHeader>
 
-            <FormField
-              control={form.control}
+            <GenericTransactionFormField
+              form={form}
               name="amount"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Valor da receita</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Digite somente números" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Valor da despesa"
+              placeholder="Digite somente números"
             />
 
             <BooleanSwitchField
@@ -134,18 +132,11 @@ export function IncomeUpsertSheet({
               className="h-10 w-1/2"
             />
 
-            <FormField
-              control={form.control}
+            <GenericTransactionFormField
+              form={form}
               name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Descrição</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Adicione a descrição" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="Descrição"
+              placeholder="Adicione a descrição"
             />
 
             <CategorySelect form={form} categories={filteredCategories || []} />
@@ -181,7 +172,12 @@ export function ExpenseUpsertSheet({
   const form = useForm<InputDefault>({
     resolver: zodResolver(incomeSchema),
     defaultValues: {
+      amount: '',
+      isPaid: false,
+      description: '',
       category: '',
+      bankAccount: '',
+      isFixed: false,
       date: new Date(),
     },
   })
@@ -277,6 +273,13 @@ export function CardExpenseUpsertSheet({
   const form = useForm<InputCardExpense>({
     resolver: zodResolver(cardExpenseSchema),
     defaultValues: {
+      amount: '',
+      description: '',
+      category: '',
+      card: '',
+      bill: '',
+      isInstallment: false,
+      isFixed: false,
       date: new Date(),
     },
   })
@@ -455,6 +458,10 @@ export function TransferUpsertSheet({
   const form = useForm<InputTransfer>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
+      amount: '',
+      description: '',
+      accountId: '',
+      destinationAccount: '',
       date: new Date(),
     },
   })
