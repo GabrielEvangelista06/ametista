@@ -50,7 +50,7 @@ model User {
   transactions  Transaction[]
   bankInfos     BankInfo[]
   cards         Card[]
-  Category      Category[]
+  categories    Category[]
 }
 
 model VerificationToken {
