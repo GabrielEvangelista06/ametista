@@ -1,5 +1,5 @@
 export enum Status {
-  COMPLETO = 'Completo',
-  PENDENTE = 'Pendente',
-  ATRASADO = 'Atrasado',
+  COMPLETED = 'COMPLETED',
+  PENDING = 'PENDING',
+  LATE = 'LATE',
 }
