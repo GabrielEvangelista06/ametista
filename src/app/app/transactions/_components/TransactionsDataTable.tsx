@@ -144,9 +144,11 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
 
         return (
           <Badge variant={statusVariant} className="capitalize">
-            {status
-              ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
-              : ''}
+            {status === Status.COMPLETED
+              ? 'Completo'
+              : status === Status.LATE
+                ? 'Atrasado'
+                : 'Pendente'}
           </Badge>
         )
       },
