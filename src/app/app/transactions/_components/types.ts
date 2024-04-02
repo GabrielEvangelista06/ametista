@@ -9,6 +9,8 @@ import { z } from 'zod'
 
 import {
   getUserBankInfos,
+  getUserBillsByCardId,
+  getUserCards,
   getUserCategories,
   getUserTransactions,
 } from '../actions'
@@ -21,6 +23,10 @@ export type BankInfo = ReturnTypeWithoutPromise<typeof getUserBankInfos>[0]
 
 export type Category = ReturnTypeWithoutPromise<typeof getUserCategories>[0]
 
+export type Card = ReturnTypeWithoutPromise<typeof getUserCards>[0]
+
+export type Bill = ReturnTypeWithoutPromise<typeof getUserBillsByCardId>[0]
+
 export type TransactionsDataTableProps = {
   data: Transaction[]
 }
@@ -30,6 +36,7 @@ export type TransactionUpsertSheetProps = {
   defaultValue?: Transaction
   dataBankInfos?: BankInfo[]
   dataCategories?: Category[]
+  dataCards?: Card[]
 }
 
 export type InputDefault = z.infer<typeof incomeSchema>
@@ -70,6 +77,7 @@ export type PopoverSelectTransactionTypeProps = {
   children?: ReactNode
   dataBankInfos: BankInfo[]
   dataCategories: Category[]
+  dataCards: Card[]
 }
 
 export type GenericTransactionFormFieldProps = {

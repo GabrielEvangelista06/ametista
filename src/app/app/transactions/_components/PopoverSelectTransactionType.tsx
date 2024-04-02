@@ -27,6 +27,7 @@ export function PopoverSelectTransactionType({
   children,
   dataBankInfos,
   dataCategories,
+  dataCards,
 }: PopoverSelectTransactionTypeProps) {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -68,7 +69,10 @@ export function PopoverSelectTransactionType({
             </div>
             <div className="flex items-center gap-4">
               <CreditCardIcon />
-              <CardExpenseUpsertSheet dataCategories={dataCategories}>
+              <CardExpenseUpsertSheet
+                dataCategories={dataCategories}
+                dataCards={dataCards}
+              >
                 <Button variant="outline" className="w-full">
                   Despesa de cartão
                 </Button>

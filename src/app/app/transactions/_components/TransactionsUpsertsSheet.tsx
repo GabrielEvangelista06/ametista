@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -38,7 +38,12 @@ import { transferSchema } from '@/validators/transferSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDownIcon } from 'lucide-react'
 
-import { upsertExpenseTransaction, upsertIncomeTransaction } from '../actions'
+import {
+  getUserBillsByCardId,
+  upsertCardExpenseTransaction,
+  upsertExpenseTransaction,
+  upsertIncomeTransaction,
+} from '../actions'
 import { BankAccountSelect } from './BankAccountSelect'
 import { BooleanSwitchField } from './BooleanSwitchField'
 import { CategorySelect } from './CategorySelect'
@@ -46,6 +51,7 @@ import { DateSelect } from './DataSelect'
 import { GenericTransactionFormField } from './GenericTransactionFormField'
 import { PopoverMoreDetails } from './PopoverMoreDetails'
 import {
+  Bill,
   InputCardExpense,
   InputDefault,
   InputTransfer,
@@ -248,6 +254,7 @@ export function ExpenseUpsertSheet({
 export function CardExpenseUpsertSheet({
   children,
   dataCategories,
+  dataCards,
 }: TransactionUpsertSheetProps) {
   const ref = useRef<HTMLDivElement>(null)
 
@@ -258,9 +265,45 @@ export function CardExpenseUpsertSheet({
     },
   })
 
-  const onSubmit = form.handleSubmit((data) => {
-    console.log(data)
+  const onSubmit = form.handleSubmit(async (data) => {
+    await upsertCardExpenseTransaction(data)
+
+    ref.current?.click()
+
+    toast({
+      title: 'Despesa de cartão adicionada',
+      description: 'Despesa adicionada com sucesso',
+    })
   })
+
+  const allCategories = defaultCategories.concat(dataCategories || [])
+
+  const filteredCategories = allCategories?.filter(
+    (category) => category.categoryType === 'expense',
+  )
+
+  const [bills, setBillings] = useState<Bill[]>([])
+
+  const selectedCardId = form.watch('card')
+
+  useEffect(() => {
+    async function fetchBillings() {
+      try {
+        const response = await getUserBillsByCardId(selectedCardId)
+        setBillings(response || [])
+      } catch (error) {
+        toast({
+          title: 'Erro',
+          description: 'Erro ao buscar as faturas',
+          variant: 'destructive',
+        })
+      }
+    }
+
+    if (selectedCardId) {
+      fetchBillings()
+    }
+  }, [selectedCardId])
 
   return (
     <Sheet>
@@ -288,7 +331,7 @@ export function CardExpenseUpsertSheet({
               placeholder="Adicione a descrição"
             />
 
-            <CategorySelect form={form} categories={dataCategories || []} />
+            <CategorySelect form={form} categories={filteredCategories || []} />
 
             <FormField
               control={form.control}
@@ -307,12 +350,17 @@ export function CardExpenseUpsertSheet({
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="est">
-                          Eastern Standard Time (EST)
-                        </SelectItem>
-                        <SelectItem value="cst">
-                          Central Standard Time (CST)
-                        </SelectItem>
+                        {dataCards && dataCards.length > 0 ? (
+                          dataCards.map((card) => (
+                            <SelectItem value={card.id} key={card.id}>
+                              {card.description}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <p className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+                            Não foram encontrados cartões para você.
+                          </p>
+                        )}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -323,7 +371,7 @@ export function CardExpenseUpsertSheet({
 
             <FormField
               control={form.control}
-              name="billing"
+              name="bill"
               render={({ field }) => (
                 <FormItem className="flex flex-col gap-1">
                   <FormLabel>Fatura</FormLabel>
@@ -338,12 +386,18 @@ export function CardExpenseUpsertSheet({
                     </FormControl>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="est">
-                          Eastern Standard Time (EST)
-                        </SelectItem>
-                        <SelectItem value="cst">
-                          Central Standard Time (CST)
-                        </SelectItem>
+                        {bills && bills.length > 0 ? (
+                          bills.map((bill) => (
+                            <SelectItem value={bill.id} key={bill.id}>
+                              {bill.description}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <p className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-2 pr-8 text-sm outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50">
+                            Não foram encontrados faturas para o cartão
+                            selecionado.
+                          </p>
+                        )}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -353,20 +407,6 @@ export function CardExpenseUpsertSheet({
             />
 
             <DateSelect form={form} />
-
-            <PopoverMoreDetails>
-              <BooleanSwitchField
-                form={form}
-                label="Parcelado"
-                name="isInstallment"
-              />
-
-              <BooleanSwitchField
-                form={form}
-                label="Despesa fixa"
-                name="fixed"
-              />
-            </PopoverMoreDetails>
 
             <SheetFooter className="mt-auto">
               <Button type="submit">Adicionar</Button>

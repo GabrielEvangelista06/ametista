@@ -10,16 +10,19 @@ import { PlusIcon } from 'lucide-react'
 
 import { PopoverSelectTransactionType } from './_components/PopoverSelectTransactionType'
 import { TransactionsDataTable } from './_components/TransactionsDataTable'
+import { BankInfo, Card, Category, Transaction } from './_components/types'
 import {
   getUserBankInfos,
+  getUserCards,
   getUserCategories,
   getUserTransactions,
 } from './actions'
 
 export default async function TransactionsPage() {
-  const transactions = await getUserTransactions()
-  const bankInfos = await getUserBankInfos()
-  const categories = await getUserCategories()
+  const transactions: Transaction[] = await getUserTransactions()
+  const bankInfos: BankInfo[] = await getUserBankInfos()
+  const categories: Category[] = await getUserCategories()
+  const cards: Card[] = await getUserCards()
 
   return (
     <PageLayout>
@@ -29,6 +32,7 @@ export default async function TransactionsPage() {
           <PopoverSelectTransactionType
             dataBankInfos={bankInfos}
             dataCategories={categories}
+            dataCards={cards}
           >
             <Button variant="outline" size="sm">
               <PlusIcon className="mr-2 h-4 w-4" />

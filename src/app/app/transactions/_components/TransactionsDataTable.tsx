@@ -136,15 +136,17 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
         const status: string = row.getValue('status')
 
         const statusVariant: 'secondary' | 'default' | 'destructive' =
-          status === Status.COMPLETO
+          status === Status.COMPLETED
             ? 'default'
-            : status === Status.ATRASADO
+            : status === Status.LATE
               ? 'destructive'
               : 'secondary'
 
         return (
           <Badge variant={statusVariant} className="capitalize">
-            {status}
+            {status
+              ? status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+              : ''}
           </Badge>
         )
       },
@@ -187,7 +189,10 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
         }).format(Math.abs(amount))
 
         const displayAmount =
-          row.getValue('type') === 'Despesa' ? `- ${formatted}` : formatted
+          row.getValue('type') === 'Despesa' ||
+          row.getValue('type') === 'Despesa de Cartão'
+            ? `- ${formatted}`
+            : formatted
 
         return <div className="font-medium">{displayAmount}</div>
       },

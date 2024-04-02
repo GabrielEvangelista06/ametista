@@ -70,8 +70,6 @@ model Transaction {
   date                  DateTime @default(now())
   destinationBankInfoId String?
   isFixed               Boolean  @default(false)
-  cardId                String?
-  billId                String?
   isInstallment         Boolean  @default(false)
   repeat                Boolean  @default(false)
   installmentCount      Int?
@@ -84,6 +82,12 @@ model Transaction {
 
   BankInfo   BankInfo? @relation(fields: [bankInfoId], references: [id], onDelete: Cascade)
   bankInfoId String?
+
+  Card   Card?   @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  cardId String?
+
+  Bill   Bill?   @relation(fields: [billId], references: [id], onDelete: Cascade)
+  billId String?
 }
 
 model BankInfo {
@@ -108,11 +112,12 @@ model Card {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  bankInfo   BankInfo @relation(fields: [bankInfoId], references: [id], onDelete: Cascade)
-  bankInfoId String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     String
-  bills      Bill[]
+  bankInfo    BankInfo      @relation(fields: [bankInfoId], references: [id], onDelete: Cascade)
+  bankInfoId  String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      String
+  bills       Bill[]
+  Transaction Transaction[]
 }
 
 model Bill {
@@ -124,8 +129,9 @@ model Bill {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  card   Card   @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  cardId String
+  card        Card          @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  cardId      String
+  Transaction Transaction[]
 }
 
 model Category {
