@@ -43,13 +43,13 @@ import {
   upsertCardExpenseTransaction,
   upsertExpenseTransaction,
   upsertIncomeTransaction,
+  upsertTransferTransaction,
 } from '../actions'
 import { BankAccountSelect } from './BankAccountSelect'
 import { BooleanSwitchField } from './BooleanSwitchField'
 import { CategorySelect } from './CategorySelect'
 import { DateSelect } from './DataSelect'
 import { GenericTransactionFormField } from './GenericTransactionFormField'
-import { PopoverMoreDetails } from './PopoverMoreDetails'
 import {
   Bill,
   InputCardExpense,
@@ -75,15 +75,23 @@ export function IncomeUpsertSheet({
   })
 
   const onSubmit = form.handleSubmit(async (data) => {
-    await upsertIncomeTransaction(data)
+    const response = await upsertIncomeTransaction(data)
+
+    if (response.error) {
+      return toast({
+        title: response.title,
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
 
     router.refresh()
 
     ref.current?.click()
 
     toast({
-      title: 'Receita adicionada',
-      description: 'Receita adicionada com sucesso',
+      title: response.title,
+      description: response.message,
     })
   })
 
@@ -121,7 +129,7 @@ export function IncomeUpsertSheet({
 
             <BooleanSwitchField
               form={form}
-              label="Pago"
+              label="Recebido"
               name="isPaid"
               className="h-10 w-1/2"
             />
@@ -179,15 +187,23 @@ export function ExpenseUpsertSheet({
   })
 
   const onSubmit = form.handleSubmit(async (data) => {
-    await upsertExpenseTransaction(data)
+    const response = await upsertExpenseTransaction(data)
+
+    if (response.error) {
+      return toast({
+        title: response.title,
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
 
     router.refresh()
 
     ref.current?.click()
 
     toast({
-      title: 'Despesa adicionada',
-      description: 'Despesa adicionada com sucesso',
+      title: response.title,
+      description: response.message,
     })
   })
 
@@ -265,14 +281,26 @@ export function CardExpenseUpsertSheet({
     },
   })
 
+  const router = useRouter()
+
   const onSubmit = form.handleSubmit(async (data) => {
-    await upsertCardExpenseTransaction(data)
+    const response = await upsertCardExpenseTransaction(data)
+
+    if (response.error) {
+      return toast({
+        title: response.title,
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
+
+    router.refresh()
 
     ref.current?.click()
 
     toast({
-      title: 'Despesa de cartão adicionada',
-      description: 'Despesa adicionada com sucesso',
+      title: response.title,
+      description: response.message,
     })
   })
 
@@ -421,20 +449,37 @@ export function CardExpenseUpsertSheet({
 export function TransferUpsertSheet({
   children,
   dataBankInfos,
-  dataCategories,
 }: TransactionUpsertSheetProps) {
   const ref = useRef<HTMLDivElement>(null)
 
   const form = useForm<InputTransfer>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
-      category: 'en',
       date: new Date(),
     },
   })
 
-  const onSubmit = form.handleSubmit((data) => {
-    console.log(data)
+  const router = useRouter()
+
+  const onSubmit = form.handleSubmit(async (data) => {
+    const response = await upsertTransferTransaction(data)
+
+    if (response.error) {
+      return toast({
+        title: response.title,
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
+
+    router.refresh()
+
+    ref.current?.click()
+
+    toast({
+      title: response.title,
+      description: response.message,
+    })
   })
 
   return (
@@ -464,7 +509,7 @@ export function TransferUpsertSheet({
             />
 
             <BankAccountSelect
-              name="sourceAccount"
+              name="accountId"
               form={form}
               label="De conta"
               data={dataBankInfos || []}
@@ -482,17 +527,7 @@ export function TransferUpsertSheet({
               data={dataBankInfos || []}
             />
 
-            <CategorySelect form={form} categories={dataCategories || []} />
-
             <DateSelect form={form} />
-
-            <PopoverMoreDetails>
-              <BooleanSwitchField
-                form={form}
-                label="Transferência fixa"
-                name="isFixed"
-              />
-            </PopoverMoreDetails>
 
             <SheetFooter className="mt-auto">
               <Button type="submit">Adicionar</Button>
