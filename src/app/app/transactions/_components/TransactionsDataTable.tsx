@@ -392,7 +392,7 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Sem resultados.
                 </TableCell>
               </TableRow>
             )}
