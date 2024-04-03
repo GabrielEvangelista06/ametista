@@ -32,6 +32,7 @@ import {
 import { toast } from '@/components/ui/use-toast'
 import { defaultCategories } from '@/constants/defaultCategories'
 import { cardExpenseSchema } from '@/validators/cardExpenseSchema'
+import { expenseSchema } from '@/validators/expenseSchema'
 import { incomeSchema } from '@/validators/incomeSchema'
 import { transferSchema } from '@/validators/transferSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -170,7 +171,7 @@ export function ExpenseUpsertSheet({
   const router = useRouter()
 
   const form = useForm<InputDefault>({
-    resolver: zodResolver(incomeSchema),
+    resolver: zodResolver(expenseSchema),
     defaultValues: {
       amount: '',
       isPaid: false,
