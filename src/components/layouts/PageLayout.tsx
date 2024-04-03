@@ -4,15 +4,12 @@ import { cn } from '@/lib/utils'
 import { motion } from 'framer-motion'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type DashboardPageGenericProps<T = any> = {
+export type PageLayoutGenericProps<T = any> = {
   children: React.ReactNode
   className?: string
 } & T
 
-export function DashboardPage({
-  children,
-  className,
-}: DashboardPageGenericProps) {
+export function PageLayout({ children, className }: PageLayoutGenericProps) {
   return (
     <motion.section
       initial={{ opacity: 0 }}
@@ -31,21 +28,26 @@ export function DashboardPage({
   )
 }
 
-export function DashboardPageHeader({
+export function PageLayoutHeader({
   children,
   className,
-}: DashboardPageGenericProps) {
+}: PageLayoutGenericProps) {
   return (
-    <header className={cn(['border-b border-border px-6 py-3', className])}>
+    <header
+      className={cn([
+        'flex items-center justify-between border-b border-border px-6 py-3',
+        className,
+      ])}
+    >
       {children}
     </header>
   )
 }
 
-export function DashboardPageHeaderTitle({
+export function PageLayoutHeaderTitle({
   children,
   className,
-}: DashboardPageGenericProps) {
+}: PageLayoutGenericProps) {
   return (
     <h1 className={cn(['text-sm uppercase text-muted-foreground', className])}>
       {children}
@@ -53,16 +55,16 @@ export function DashboardPageHeaderTitle({
   )
 }
 
-export function DashboardPageHeaderNav({
+export function PageLayoutHeaderNav({
   children,
   className,
-}: DashboardPageGenericProps) {
+}: PageLayoutGenericProps) {
   return <nav className={cn(['', className])}>{children}</nav>
 }
 
-export function DashboardPageMain({
+export function PageLayoutMain({
   children,
   className,
-}: DashboardPageGenericProps) {
+}: PageLayoutGenericProps) {
   return <main className={cn(['lg:p-2', className])}>{children}</main>
 }

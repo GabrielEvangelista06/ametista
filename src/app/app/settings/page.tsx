@@ -1,19 +1,19 @@
 import {
-  DashboardPage,
-  DashboardPageHeader,
-  DashboardPageHeaderTitle,
-  DashboardPageMain,
+  PageLayout,
+  PageLayoutHeader,
+  PageLayoutHeaderTitle,
+  PageLayoutMain,
 } from '@/components/layouts/PageLayout'
 
 export default function SettingsPage() {
   return (
-    <DashboardPage>
-      <DashboardPageHeader>
-        <DashboardPageHeaderTitle>Configurações</DashboardPageHeaderTitle>
-      </DashboardPageHeader>
-      <DashboardPageMain>
+    <PageLayout>
+      <PageLayoutHeader>
+        <PageLayoutHeaderTitle>Configurações</PageLayoutHeaderTitle>
+      </PageLayoutHeader>
+      <PageLayoutMain>
         <h1>Configurações</h1>
-      </DashboardPageMain>
-    </DashboardPage>
+      </PageLayoutMain>
+    </PageLayout>
   )
 }

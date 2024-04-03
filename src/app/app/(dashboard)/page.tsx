@@ -1,8 +1,8 @@
 import {
-  DashboardPage,
-  DashboardPageHeader,
-  DashboardPageHeaderTitle,
-  DashboardPageMain,
+  PageLayout,
+  PageLayoutHeader,
+  PageLayoutHeaderTitle,
+  PageLayoutMain,
 } from '@/components/layouts/PageLayout'
 import {
   Card,
@@ -18,11 +18,11 @@ import { DashboardLastTransactions } from './_components/DashboardLastTransactio
 
 export default function AppPage() {
   return (
-    <DashboardPage>
-      <DashboardPageHeader>
-        <DashboardPageHeaderTitle>Dashboard</DashboardPageHeaderTitle>
-      </DashboardPageHeader>
-      <DashboardPageMain className="space-y-4">
+    <PageLayout>
+      <PageLayoutHeader>
+        <PageLayoutHeaderTitle>Dashboard</PageLayoutHeaderTitle>
+      </PageLayoutHeader>
+      <PageLayoutMain className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <DashboardCards />
         </div>
@@ -47,7 +47,7 @@ export default function AppPage() {
             </CardContent>
           </Card>
         </div>
-      </DashboardPageMain>
-    </DashboardPage>
+      </PageLayoutMain>
+    </PageLayout>
   )
 }
