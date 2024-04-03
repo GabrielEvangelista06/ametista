@@ -399,9 +399,11 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
+      <div
+        className={`flex items-center justify-end space-x-2 ${table.getFilteredRowModel().rows.length > 10 ? 'py-0 pt-1' : 'py-4'}`}
+      >
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{' '}
+          {table.getFilteredSelectedRowModel().rows.length} de{' '}
           {table.getFilteredRowModel().rows.length} linhas(s) selecionadas.
         </div>
         <div className="space-x-2">
