@@ -55,9 +55,9 @@ const customSortFn = (
     const statusB = rowB.getValue('status')
 
     const priorities: { [key: string]: number } = {
-      Atrasado: 1,
-      Pendente: 2,
-      Completo: 3,
+      LATE: 1,
+      PENDING: 2,
+      COMPLETED: 3,
     }
 
     const priorityA = priorities[statusA as string]
