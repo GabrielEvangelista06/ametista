@@ -121,7 +121,7 @@ export function IncomeUpsertSheet({
             <GenericTransactionFormField
               form={form}
               name="amount"
-              label="Valor da despesa"
+              label="Valor da receita"
               placeholder="Digite somente números"
             />
 
