@@ -15,7 +15,7 @@ export async function updateProfile(
   if (!session?.user?.id) {
     return {
       data: null,
-      title: 'Erro ao criar receita',
+      title: 'Erro ao atualizar perfil',
       message: 'Usuário não autorizado',
       error: true,
     }
