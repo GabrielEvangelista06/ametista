@@ -16,7 +16,6 @@ import {
   DashboardSidebarNavLink,
   DashboardSidebarNavMain,
 } from '@/components/layouts/Sidebar'
-import { ModeToggle } from '@/components/ModeToggle'
 import { Button } from '@/components/ui/button'
 import { Cross2Icon, HamburgerMenuIcon } from '@radix-ui/react-icons'
 import { motion } from 'framer-motion'
@@ -63,12 +62,10 @@ export function MainSidebar({ user }: MainSidebarProps) {
       >
         <DashboardSidebarHeader>
           <motion.div
-            className="mt-8 flex h-12 items-center justify-between lg:mt-0"
             initial={{ x: -300 }}
             animate={{ x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <ModeToggle />
             <Image
               src={Logo}
               width={50}
