@@ -1,5 +1,5 @@
 import { AppearanceForm } from './_components/AppearanceForm'
 
-export default function ThemePage() {
+export default function AppearancePage() {
   return <AppearanceForm />
 }

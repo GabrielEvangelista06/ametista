@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 
-export default function BillingPage() {
+export default function SubscriptionPage() {
   return (
     <Card>
       <CardHeader className="border-b border-border">
