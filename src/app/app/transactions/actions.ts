@@ -8,10 +8,12 @@ import { StatusBill } from '@/enums/StatusBill'
 import { TransactionTypes } from '@/enums/TransactionTypes'
 import { authConfig } from '@/lib/auth'
 import { db } from '@/lib/prisma'
-import { deleteTransactionSchema } from '@/validators/deleteTransactionSchema'
+import { deleteSchema } from '@/validators/deleteSchema'
+import { updateTransactionStatusSchema } from '@/validators/updateTransctionStatus'
 import { z } from 'zod'
 
 import {
+  Category,
   InputCardExpense,
   InputDefault,
   InputTransfer,
@@ -44,13 +46,14 @@ export async function getUserTransactions() {
         const categories = await getUserCategories()
 
         categoryName =
-          categories.find((category) => category.id === transaction?.categoryId)
-            ?.name ?? ''
+          categories.find(
+            (category: Category) => category.id === transaction?.categoryId,
+          )?.name ?? ''
       }
 
       return {
         ...transaction,
-        bankInfoInstitution: bankInfo?.bankInstitution || 'Não informado',
+        bankInfoInstitution: bankInfo?.name || 'Não informado',
         type:
           transaction.type === TransactionTypes.INCOME
             ? 'Receita'
@@ -74,7 +77,7 @@ export async function getUserBankInfos() {
     where: { userId: session?.user?.id },
     select: {
       id: true,
-      bankInstitution: true,
+      name: true,
     },
   })
 
@@ -587,9 +590,7 @@ export async function upsertTransferTransaction(input: InputTransfer) {
   }
 }
 
-export async function deleteTransaction(
-  input: z.infer<typeof deleteTransactionSchema>,
-) {
+export async function deleteTransaction(input: z.infer<typeof deleteSchema>) {
   const session = await getServerSession(authConfig)
 
   if (!session?.user?.id) {
@@ -623,4 +624,144 @@ export async function deleteTransaction(
   })
 
   return { error: null, data: 'Transação excluída com sucesso' }
+}
+
+export async function updateTransactionStatus(
+  input: z.infer<typeof updateTransactionStatusSchema>,
+) {
+  const session = await getServerSession(authConfig)
+
+  if (!session?.user?.id) {
+    return {
+      error: 'Usuário não autorizado',
+      data: null,
+    }
+  }
+
+  const { id, status } = input
+
+  const transaction = await db.transaction.findUnique({
+    where: {
+      id,
+      userId: session?.user?.id,
+    },
+  })
+
+  if (!transaction) {
+    return {
+      data: null,
+      title: 'Erro ao atualizar status',
+      message: 'Transação não encontrada',
+      error: true,
+    }
+  }
+
+  if (transaction.status === status) {
+    return {
+      data: null,
+      title: 'Erro ao atualizar status',
+      message: 'Status já está completo',
+      error: true,
+    }
+  }
+
+  const bankInfo = await db.bankInfo.findUnique({
+    where: { id: transaction.bankInfoId!, userId: session?.user?.id },
+  })
+
+  if (!bankInfo) {
+    return {
+      data: null,
+      title: 'Erro ao atualizar status',
+      message: 'Conta não encontrada',
+      error: true,
+    }
+  }
+
+  if (
+    transaction.type === TransactionTypes.INCOME &&
+    status === Status.COMPLETED
+  ) {
+    bankInfo.currentBalance += transaction.amount
+  }
+
+  if (
+    transaction.type === TransactionTypes.EXPENSE &&
+    status === Status.COMPLETED
+  ) {
+    bankInfo.currentBalance -= transaction.amount
+  }
+
+  if (transaction.type === TransactionTypes.CARD_EXPENSE) {
+    const bill = await db.bill.findUnique({
+      where: { id: transaction.billId! },
+    })
+
+    if (bill) {
+      bill.amount -= transaction.amount
+
+      await db.bill.update({
+        where: { id: bill.id },
+        data: { amount: bill.amount },
+      })
+    }
+  }
+
+  if (transaction.type === TransactionTypes.TRANSFER) {
+    const sourceBankInfo = await db.bankInfo.findUnique({
+      where: {
+        id: transaction.bankInfoId!,
+        userId: session.user.id,
+      },
+    })
+
+    const destinationBankInfo = await db.bankInfo.findUnique({
+      where: {
+        id: transaction.destinationBankInfoId!,
+        userId: session.user.id,
+      },
+    })
+
+    if (sourceBankInfo && destinationBankInfo) {
+      sourceBankInfo.currentBalance -= transaction.amount
+      destinationBankInfo.currentBalance += transaction.amount
+
+      await db.bankInfo.update({
+        where: { id: transaction.bankInfoId!, userId: session.user.id },
+        data: { currentBalance: sourceBankInfo.currentBalance },
+      })
+
+      await db.bankInfo.update({
+        where: {
+          id: transaction.destinationBankInfoId!,
+          userId: session.user.id,
+        },
+        data: { currentBalance: destinationBankInfo.currentBalance },
+      })
+    }
+  }
+
+  const updatedTransaction = await db.transaction.update({
+    where: {
+      id,
+      userId: session?.user?.id,
+    },
+    data: {
+      status,
+    },
+  })
+
+  if (updatedTransaction) {
+    await db.bankInfo.update({
+      where: { id: transaction.bankInfoId!, userId: session?.user?.id },
+      data: { currentBalance: bankInfo.currentBalance },
+    })
+  }
+
+  return {
+    data: updatedTransaction,
+    title: 'Status atualizado',
+    message: 'Status atualizado com sucesso',
+    error: false,
+  }
 }
