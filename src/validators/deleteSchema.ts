@@ -1,5 +1,5 @@
 import { z } from 'zod'
 
-export const deleteTransactionSchema = z.object({
+export const deleteSchema = z.object({
   id: z.string({ required_error: 'ID é obrigatório' }),
 })
