@@ -3,7 +3,6 @@
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import {
@@ -15,7 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { Input } from '@/components/ui/input'
 import {
   Table,
   TableBody,
@@ -25,12 +23,11 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { toast } from '@/components/ui/use-toast'
-import { Status } from '@/enums/Status'
+import { BankInfoType } from '@/enums/BankInfoType'
 import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons'
 import {
   ColumnDef,
   ColumnFiltersState,
-  Row,
   SortingState,
   VisibilityState,
   flexRender,
@@ -42,34 +39,14 @@ import {
 } from '@tanstack/react-table'
 import { ChevronDownIcon } from 'lucide-react'
 
-import { deleteTransaction, updateTransactionStatus } from '../actions'
-import { Transaction, TransactionsDataTableProps } from './types'
+import { deleteBankInfo } from '../actions'
+import { BankInfo } from '../types'
 
-const customSortFn = (
-  rowA: Row<Transaction>,
-  rowB: Row<Transaction>,
-  columnId: string,
-) => {
-  if (columnId === 'status') {
-    const statusA = rowA.getValue('status')
-    const statusB = rowB.getValue('status')
-
-    const priorities: { [key: string]: number } = {
-      LATE: 1,
-      PENDING: 2,
-      COMPLETED: 3,
-    }
-
-    const priorityA = priorities[statusA as string]
-    const priorityB = priorities[statusB as string]
-
-    return priorityA - priorityB
-  }
-
-  return Number(rowA.getValue(columnId)) - Number(rowB.getValue(columnId))
+type BankAccountsDataTableProps = {
+  data: BankInfo[]
 }
 
-export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
+export function BankAccountsDataTable({ data }: BankAccountsDataTableProps) {
   const router = useRouter()
 
   const [sorting, setSorting] = useState<SortingState>([])
@@ -77,32 +54,10 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = useState({})
 
-  const handleDeleteTransaction = async (transaction: Transaction) => {
-    const response = await deleteTransaction({ id: transaction.id })
-
-    if (response.error) {
-      return toast({
-        title: 'Erro',
-        description: response.error,
-        variant: 'destructive',
-      })
-    }
+  const handleDeleteBankInfo = async (transaction: BankInfo) => {
+    const response = await deleteBankInfo({ id: transaction.id })
 
     router.refresh()
-
-    toast({
-      title: 'Transação excluída',
-      description: response.data,
-    })
-  }
-
-  const updateTransactionStatusToCompleted = async (
-    transaction: Transaction,
-  ) => {
-    const response = await updateTransactionStatus({
-      id: transaction.id,
-      status: Status.COMPLETED,
-    })
 
     if (response.error) {
       return toast({
@@ -112,15 +67,13 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
       })
     }
 
-    router.refresh()
-
     toast({
       title: response.title,
       description: response.message,
     })
   }
 
-  const columns: ColumnDef<Transaction>[] = [
+  const columns: ColumnDef<BankInfo>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -144,83 +97,42 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
       enableHiding: false,
     },
     {
-      accessorKey: 'status',
+      accessorKey: 'name',
       header: ({ column }) => {
         return (
           <Button
             variant="link"
             onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
           >
-            Status
+            Nome
+            <CaretSortIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div>{row.getValue('name')}</div>,
+    },
+    {
+      accessorKey: 'currentBalance',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="link"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Saldo
             <CaretSortIcon className="ml-2 h-4 w-4" />
           </Button>
         )
       },
       cell: ({ row }) => {
-        const status: string = row.getValue('status')
-
-        const statusVariant: 'secondary' | 'default' | 'destructive' =
-          status === Status.COMPLETED
-            ? 'default'
-            : status === Status.LATE
-              ? 'destructive'
-              : 'secondary'
-
-        return (
-          <Badge variant={statusVariant} className="capitalize">
-            {status === Status.COMPLETED
-              ? 'Completo'
-              : status === Status.LATE
-                ? 'Atrasado'
-                : 'Pendente'}
-          </Badge>
-        )
-      },
-      sortingFn: customSortFn,
-    },
-    {
-      accessorKey: 'description',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="link"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Descrição
-            <CaretSortIcon className="ml-2 h-4 w-4" />
-          </Button>
-        )
-      },
-      cell: ({ row }) => <div>{row.getValue('description')}</div>,
-    },
-    {
-      accessorKey: 'amount',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="link"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Valor
-            <CaretSortIcon className="ml-2 h-4 w-4" />
-          </Button>
-        )
-      },
-      cell: ({ row }) => {
-        const amount = parseFloat(row.getValue('amount'))
+        const amount = parseFloat(row.getValue('currentBalance'))
 
         const formatted = new Intl.NumberFormat('pt-BR', {
           style: 'currency',
           currency: 'BRL',
         }).format(Math.abs(amount))
 
-        const displayAmount =
-          row.getValue('type') === 'Despesa' ||
-          row.getValue('type') === 'Despesa de Cartão'
-            ? `- ${formatted}`
-            : formatted
-
-        return <div className="font-medium">{displayAmount}</div>
+        return <div className="font-medium">{formatted}</div>
       },
     },
     {
@@ -237,47 +149,12 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
         )
       },
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue('type')}</div>
+        <div className="capitalize">
+          {row.getValue('type') === BankInfoType.CHECKING_ACCOUNT
+            ? 'Conta corrente'
+            : 'Conta poupança'}
+        </div>
       ),
-    },
-    {
-      accessorKey: 'category',
-      header: () => <div>Categoria</div>,
-      cell: ({ row }) => {
-        return <div className="font-medium">{row.getValue('category')}</div>
-      },
-    },
-    {
-      accessorKey: 'bankInfoInstitution',
-      header: () => <div>Conta</div>,
-      cell: ({ row }) => {
-        return (
-          <div className="font-medium">
-            {row.getValue('bankInfoInstitution')}
-          </div>
-        )
-      },
-    },
-    {
-      accessorKey: 'date',
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="link"
-            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
-          >
-            Data
-            <CaretSortIcon className="ml-2 h-4 w-4" />
-          </Button>
-        )
-      },
-      cell: ({ row }) => {
-        return (
-          <div className="font-medium">
-            {new Date(row.getValue('date')).toLocaleDateString('pt-BR')}
-          </div>
-        )
-      },
     },
     {
       id: 'actions',
@@ -302,12 +179,7 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => updateTransactionStatusToCompleted(transaction)}
-              >
-                Marcar como completo
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleDeleteTransaction(transaction)}
+                onClick={() => handleDeleteBankInfo(transaction)}
               >
                 Excluir
               </DropdownMenuItem>
@@ -339,29 +211,14 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
   })
 
   const columnTranslations = {
-    status: 'Status',
-    description: 'Descrição',
-    amount: 'Valor',
-    type: 'Tipo',
-    category: 'Categoria',
-    bankInfoInstitution: 'Conta',
-    date: 'Data',
-    actions: 'Ações',
+    name: 'Nome',
+    currentBalance: 'Saldo',
+    accountType: 'Tipo',
   }
 
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
-        <Input
-          placeholder="Filtrar por descrição..."
-          value={
-            (table.getColumn('description')?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table.getColumn('description')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">

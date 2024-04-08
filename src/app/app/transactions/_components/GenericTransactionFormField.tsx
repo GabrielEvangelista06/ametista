@@ -14,6 +14,7 @@ export function GenericTransactionFormField({
   name,
   label,
   placeholder,
+  type = 'text',
 }: GenericTransactionFormFieldProps) {
   return (
     <FormField
@@ -23,7 +24,7 @@ export function GenericTransactionFormField({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <FormControl>
-            <Input placeholder={placeholder} {...field} />
+            <Input placeholder={placeholder} {...field} type={type} />
           </FormControl>
           <FormMessage />
         </FormItem>

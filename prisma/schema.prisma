@@ -93,9 +93,8 @@ model Transaction {
 model BankInfo {
   id              String        @id @default(cuid())
   currentBalance  Float
-  bankInstitution String
-  accountType     String
-  initialBalance  Float
+  name String
+  type     String
   transactions    Transaction[]
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          String

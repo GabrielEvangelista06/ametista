@@ -37,6 +37,7 @@ import { incomeSchema } from '@/validators/incomeSchema'
 import { transferSchema } from '@/validators/transferSchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ChevronDownIcon } from 'lucide-react'
+import { z } from 'zod'
 
 import {
   getUserBillsByCardId,
@@ -70,7 +71,7 @@ export function IncomeUpsertSheet({
   const form = useForm<InputDefault>({
     resolver: zodResolver(incomeSchema),
     defaultValues: {
-      amount: '',
+      amount: 0,
       isPaid: false,
       description: '',
       category: '',
@@ -123,7 +124,8 @@ export function IncomeUpsertSheet({
               form={form}
               name="amount"
               label="Valor da receita"
-              placeholder="Digite somente números"
+              placeholder="Digite o valor da receita"
+              type="number"
             />
 
             <BooleanSwitchField
@@ -170,10 +172,10 @@ export function ExpenseUpsertSheet({
 
   const router = useRouter()
 
-  const form = useForm<InputDefault>({
+  const form = useForm<z.infer<typeof expenseSchema>>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      amount: '',
+      amount: 0,
       isPaid: false,
       description: '',
       category: '',
@@ -226,7 +228,8 @@ export function ExpenseUpsertSheet({
               form={form}
               name="amount"
               label="Valor da despesa"
-              placeholder="Digite somente números"
+              placeholder="Digite o valor da despesa"
+              type="number"
             />
 
             <BooleanSwitchField
@@ -274,7 +277,7 @@ export function CardExpenseUpsertSheet({
   const form = useForm<InputCardExpense>({
     resolver: zodResolver(cardExpenseSchema),
     defaultValues: {
-      amount: '',
+      amount: 0,
       description: '',
       category: '',
       card: '',
@@ -353,7 +356,8 @@ export function CardExpenseUpsertSheet({
               form={form}
               name="amount"
               label="Valor da despesa"
-              placeholder="Digite somente números"
+              placeholder="Digite o valor da despesa"
+              type="number"
             />
 
             <GenericTransactionFormField
@@ -459,7 +463,7 @@ export function TransferUpsertSheet({
   const form = useForm<InputTransfer>({
     resolver: zodResolver(transferSchema),
     defaultValues: {
-      amount: '',
+      amount: 0,
       description: '',
       accountId: '',
       destinationAccount: '',
@@ -506,7 +510,8 @@ export function TransferUpsertSheet({
               form={form}
               name="amount"
               label="Valor da transferência"
-              placeholder="Digite somente números"
+              placeholder="Digite o valor da transferência"
+              type="number"
             />
 
             <GenericTransactionFormField

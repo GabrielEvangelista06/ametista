@@ -96,8 +96,8 @@ export function MainSidebar({ user }: MainSidebarProps) {
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
                 index={3}
-                href="/app/tags"
-                active={isActive('/app/tags')}
+                href="/app/bank-accounts"
+                active={isActive('/app/bank-accounts')}
               >
                 <LandmarkIcon className="mr-3 h-3 w-3" />
                 Contas
