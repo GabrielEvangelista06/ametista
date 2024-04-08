@@ -42,7 +42,7 @@ import {
 } from '@tanstack/react-table'
 import { ChevronDownIcon } from 'lucide-react'
 
-import { deleteTransaction } from '../actions'
+import { deleteTransaction, updateTransactionStatus } from '../actions'
 import { Transaction, TransactionsDataTableProps } from './types'
 
 const customSortFn = (
@@ -80,19 +80,43 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
   const handleDeleteTransaction = async (transaction: Transaction) => {
     const response = await deleteTransaction({ id: transaction.id })
 
-    router.refresh()
-
     if (response.error) {
-      toast({
+      return toast({
         title: 'Erro',
         description: response.error,
         variant: 'destructive',
       })
     }
 
+    router.refresh()
+
     toast({
       title: 'Transação excluída',
       description: response.data,
+    })
+  }
+
+  const updateTransactionStatusToCompleted = async (
+    transaction: Transaction,
+  ) => {
+    const response = await updateTransactionStatus({
+      id: transaction.id,
+      status: Status.COMPLETED,
+    })
+
+    if (response.error) {
+      return toast({
+        title: response.title,
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
+
+    router.refresh()
+
+    toast({
+      title: response.title,
+      description: response.message,
     })
   }
 
@@ -277,6 +301,11 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
                 Copiar ID
               </DropdownMenuItem>
               <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => updateTransactionStatusToCompleted(transaction)}
+              >
+                Marcar como completo
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleDeleteTransaction(transaction)}
               >
