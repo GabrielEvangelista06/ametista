@@ -47,7 +47,7 @@ export function BankAccountSelect({
                 >
                   {field.value
                     ? data.find((bankAccount) => bankAccount.id === field.value)
-                        ?.bankInstitution
+                        ?.name
                     : 'Selecione a conta'}
                   <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
@@ -63,13 +63,13 @@ export function BankAccountSelect({
                 <CommandGroup>
                   {data.map((bankAccount) => (
                     <CommandItem
-                      value={bankAccount.bankInstitution}
+                      value={bankAccount.name}
                       key={bankAccount.id}
                       onSelect={() => {
                         form.setValue(name, bankAccount.id)
                       }}
                     >
-                      {bankAccount.bankInstitution}
+                      {bankAccount.name}
                       <CheckIcon
                         className={cn(
                           'ml-auto h-4 w-4',
