@@ -93,4 +93,5 @@ export type GenericTransactionFormFieldProps = {
     | 'billing'
     | 'isInstallment'
   placeholder: string
+  type?: string
 }

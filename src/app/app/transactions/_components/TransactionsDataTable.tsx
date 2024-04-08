@@ -338,6 +338,17 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
     },
   })
 
+  const columnTranslations = {
+    status: 'Status',
+    description: 'Descrição',
+    amount: 'Valor',
+    type: 'Tipo',
+    category: 'Categoria',
+    bankInfoInstitution: 'Conta',
+    date: 'Data',
+    actions: 'Ações',
+  }
+
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
@@ -371,7 +382,11 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {
+                      columnTranslations[
+                        column.id as keyof typeof columnTranslations
+                      ]
+                    }
                   </DropdownMenuCheckboxItem>
                 )
               })}

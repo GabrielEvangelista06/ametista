@@ -60,7 +60,7 @@ export function BankAccountsDataTable({ data }: BankAccountsDataTableProps) {
     router.refresh()
 
     if (response.error) {
-      toast({
+      return toast({
         title: response.title,
         description: response.message,
         variant: 'destructive',

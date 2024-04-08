@@ -203,7 +203,7 @@ export async function upsertIncomeTransaction(input: InputDefault) {
         userId: session?.user?.id,
       },
       data: {
-        amount: parseFloat(amount),
+        amount,
         status: isPaid ? Status.COMPLETED : Status.PENDING,
         description,
         categoryId: category,
@@ -217,7 +217,7 @@ export async function upsertIncomeTransaction(input: InputDefault) {
       const bankInfo = await getBankInfoById(bankAccount)
 
       if (bankInfo) {
-        bankInfo.currentBalance += parseFloat(amount)
+        bankInfo.currentBalance += amount
 
         await db.bankInfo.update({
           where: { id: bankAccount },
@@ -237,7 +237,7 @@ export async function upsertIncomeTransaction(input: InputDefault) {
   const transaction = await db.transaction.create({
     data: {
       type: TransactionTypes.INCOME,
-      amount: parseFloat(amount),
+      amount,
       status: isPaid ? Status.COMPLETED : Status.PENDING,
       description,
       categoryId: category,
@@ -252,7 +252,7 @@ export async function upsertIncomeTransaction(input: InputDefault) {
     const bankInfo = await getBankInfoById(bankAccount)
 
     if (bankInfo) {
-      bankInfo.currentBalance += parseFloat(amount)
+      bankInfo.currentBalance += amount
 
       await db.bankInfo.update({
         where: { id: bankAccount },
@@ -318,7 +318,7 @@ export async function upsertExpenseTransaction(input: InputDefault) {
         userId: session?.user?.id,
       },
       data: {
-        amount: parseFloat(amount),
+        amount,
         status: isPaid ? Status.COMPLETED : Status.PENDING,
         description,
         categoryId: category,
@@ -332,7 +332,7 @@ export async function upsertExpenseTransaction(input: InputDefault) {
       const bankInfo = await getBankInfoById(bankAccount)
 
       if (bankInfo) {
-        bankInfo.currentBalance -= parseFloat(amount)
+        bankInfo.currentBalance -= amount
 
         await db.bankInfo.update({
           where: { id: bankAccount },
@@ -352,7 +352,7 @@ export async function upsertExpenseTransaction(input: InputDefault) {
   const transaction = await db.transaction.create({
     data: {
       type: TransactionTypes.EXPENSE,
-      amount: parseFloat(amount),
+      amount,
       status: isPaid ? Status.COMPLETED : Status.PENDING,
       description,
       categoryId: category,
@@ -367,7 +367,7 @@ export async function upsertExpenseTransaction(input: InputDefault) {
     const bankInfo = await getBankInfoById(bankAccount)
 
     if (bankInfo) {
-      bankInfo.currentBalance -= parseFloat(amount)
+      bankInfo.currentBalance -= amount
 
       await db.bankInfo.update({
         where: { id: bankAccount },
@@ -426,7 +426,7 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
         userId: session?.user?.id,
       },
       data: {
-        amount: parseFloat(amount),
+        amount,
         status: Status.PENDING,
         description,
         date,
@@ -448,7 +448,7 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
   const transaction = await db.transaction.create({
     data: {
       type: TransactionTypes.CARD_EXPENSE,
-      amount: parseFloat(amount),
+      amount,
       status: Status.PENDING,
       description,
       date,
@@ -466,7 +466,7 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
     })
 
     if (bill) {
-      bill.amount += parseFloat(amount)
+      bill.amount += amount
 
       await db.bill.update({
         where: { id: bill.id },
@@ -505,7 +505,7 @@ export async function upsertTransferTransaction(input: InputTransfer) {
     where: { id: destinationAccount, userId: session?.user?.id },
   })
 
-  if ((bankInfoSource?.currentBalance ?? 0) < parseFloat(amount)) {
+  if ((bankInfoSource?.currentBalance ?? 0) < amount) {
     return {
       data: null,
       title: 'Erro ao realizar transferência',
@@ -540,7 +540,7 @@ export async function upsertTransferTransaction(input: InputTransfer) {
         userId: session?.user?.id,
       },
       data: {
-        amount: parseFloat(amount),
+        amount,
         description,
         bankInfoId: accountId,
         destinationBankInfoId: destinationAccount,
@@ -559,7 +559,7 @@ export async function upsertTransferTransaction(input: InputTransfer) {
     data: {
       type: TransactionTypes.TRANSFER,
       status: Status.COMPLETED,
-      amount: parseFloat(amount),
+      amount,
       description,
       bankInfoId: accountId,
       destinationBankInfoId: destinationAccount,
@@ -569,8 +569,8 @@ export async function upsertTransferTransaction(input: InputTransfer) {
   })
 
   if (transaction && bankInfoSource && bankInfoDestination) {
-    bankInfoSource.currentBalance -= parseFloat(amount)
-    bankInfoDestination.currentBalance += parseFloat(amount)
+    bankInfoSource.currentBalance -= amount
+    bankInfoDestination.currentBalance += amount
 
     await db.bankInfo.update({
       where: { id: accountId },
@@ -703,40 +703,6 @@ export async function updateTransactionStatus(
       await db.bill.update({
         where: { id: bill.id },
         data: { amount: bill.amount },
-      })
-    }
-  }
-
-  if (transaction.type === TransactionTypes.TRANSFER) {
-    const sourceBankInfo = await db.bankInfo.findUnique({
-      where: {
-        id: transaction.bankInfoId!,
-        userId: session.user.id,
-      },
-    })
-
-    const destinationBankInfo = await db.bankInfo.findUnique({
-      where: {
-        id: transaction.destinationBankInfoId!,
-        userId: session.user.id,
-      },
-    })
-
-    if (sourceBankInfo && destinationBankInfo) {
-      sourceBankInfo.currentBalance -= transaction.amount
-      destinationBankInfo.currentBalance += transaction.amount
-
-      await db.bankInfo.update({
-        where: { id: transaction.bankInfoId!, userId: session.user.id },
-        data: { currentBalance: sourceBankInfo.currentBalance },
-      })
-
-      await db.bankInfo.update({
-        where: {
-          id: transaction.destinationBankInfoId!,
-          userId: session.user.id,
-        },
-        data: { currentBalance: destinationBankInfo.currentBalance },
       })
     }
   }

@@ -64,7 +64,7 @@ export async function deleteBankInfo(input: z.infer<typeof deleteSchema>) {
   const transaction = await db.transaction.findUnique({
     where: {
       id: input.id,
-      userId: session?.user?.id,
+      userId: session.user.id,
     },
     select: {
       id: true,
@@ -94,41 +94,6 @@ export async function deleteBankInfo(input: z.infer<typeof deleteSchema>) {
   }
 }
 
-export async function countTransactionsByType() {
-  const session = await getServerSession(authConfig)
-
-  const bankInfos = await db.bankInfo.findMany({
-    where: { userId: session?.user?.id },
-  })
-
-  const transactionCounts = {
-    INCOME: 0,
-    EXPENSE: 0,
-    CARD_EXPENSE: 0,
-    TRANSFER: 0,
-  }
-
-  for (const bankInfo of bankInfos) {
-    const transactions = await db.transaction.findMany({
-      where: { bankInfoId: bankInfo.id },
-    })
-
-    transactions.forEach((transaction) => {
-      if (transaction.type === TransactionTypes.INCOME) {
-        transactionCounts.INCOME++
-      } else if (transaction.type === TransactionTypes.INCOME) {
-        transactionCounts.EXPENSE++
-      } else if (transaction.type === TransactionTypes.CARD_EXPENSE) {
-        transactionCounts.CARD_EXPENSE++
-      } else if (transaction.type === TransactionTypes.TRANSFER) {
-        transactionCounts.TRANSFER++
-      }
-    })
-  }
-
-  return transactionCounts
-}
-
 export async function upsertBankInfo(input: z.infer<typeof bankInfoSchema>) {
   const session = await getServerSession(authConfig)
 
@@ -147,7 +112,7 @@ export async function upsertBankInfo(input: z.infer<typeof bankInfoSchema>) {
     const bankInfo = await db.bankInfo.findUnique({
       where: {
         id,
-        userId: session?.user?.id,
+        userId: session.user.id,
       },
       select: {
         id: true,
@@ -166,6 +131,7 @@ export async function upsertBankInfo(input: z.infer<typeof bankInfoSchema>) {
     const updatedBankInfo = await db.bankInfo.update({
       where: {
         id,
+        userId: session.user.id,
       },
       data: {
         name,

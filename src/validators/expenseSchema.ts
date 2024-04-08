@@ -3,8 +3,11 @@ import { z } from 'zod'
 export const expenseSchema = z.object({
   id: z.string().optional(),
   amount: z
-    .string({ required_error: 'O valor da despesa é obrigatório' })
-    .regex(/^\d+$/, { message: 'O valor precisa ser um número positivo' }),
+    .string()
+    .transform((v) => Number(v) || 0)
+    .refine((value) => value > 0, {
+      message: 'Valor deve ser um número positivo',
+    }),
   isPaid: z.boolean().optional().default(false),
   description: z
     .string({ required_error: 'A descrição é obrigatória' })
