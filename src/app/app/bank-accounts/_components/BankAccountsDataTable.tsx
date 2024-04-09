@@ -213,7 +213,7 @@ export function BankAccountsDataTable({ data }: BankAccountsDataTableProps) {
   const columnTranslations = {
     name: 'Nome',
     currentBalance: 'Saldo',
-    accountType: 'Tipo',
+    type: 'Tipo',
   }
 
   return (
