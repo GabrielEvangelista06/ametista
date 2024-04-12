@@ -1,5 +1,6 @@
 import { Session } from 'next-auth'
 import { signOut } from 'next-auth/react'
+import Link from 'next/link'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -59,7 +60,7 @@ export function UserDropdown({ user }: UserDropdownProps) {
         <DropdownMenuGroup>
           <DropdownMenuItem>
             <Settings2 className="mr-3 h-3 w-3" />
-            Configurações
+            <Link href="/app/settings">Configurações</Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <RocketIcon className="mr-3 h-3 w-3" /> Upgrade

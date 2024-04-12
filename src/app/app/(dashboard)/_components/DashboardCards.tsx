@@ -1,3 +1,10 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+
+import { toast } from '@/components/ui/use-toast'
+import { TransactionTypes } from '@/enums/TransactionTypes'
+import { formatCurrency } from '@/lib/formatCurrency'
 import {
   HandCoinsIcon,
   PiggyBankIcon,
@@ -11,8 +18,133 @@ import {
   DashboardCardHeader,
   DashboardCardHeaderTitle,
 } from '../_components/DashboardCard'
+import {
+  calculateSavingsForPeriod,
+  getBalance,
+  getTotalForTheSelectedPeriod,
+} from '../actions'
 
 export function DashboardCards() {
+  const [totalIncome, setTotalIncome] = useState<string>('R$ 0')
+  const [totalExpense, setTotalExpense] = useState<string>('R$ 0')
+  const [balance, setBalance] = useState<string>('R$ 0')
+  const [savings, setSavings] = useState<string>('R$ 0')
+
+  const getTotalIncome = async () => {
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+
+    const response = await getTotalForTheSelectedPeriod(
+      TransactionTypes.INCOME,
+      startOfMonth,
+      endOfMonth,
+    )
+
+    if (response.error) {
+      return toast({
+        title: response.title,
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
+
+    const formattedIncome = response.data
+      ? formatCurrency(response.data)
+      : 'R$ 0'
+
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+
+    return setTotalIncome(formattedIncome)
+  }
+
+  const getTotalExpense = async () => {
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+
+    const response = await getTotalForTheSelectedPeriod(
+      TransactionTypes.EXPENSE,
+      startOfMonth,
+      endOfMonth,
+    )
+
+    if (response.error) {
+      return toast({
+        title: response.title,
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
+
+    const formattedExpense = response.data
+      ? formatCurrency(response.data)
+      : 'R$ 0'
+
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+
+    return setTotalExpense(formattedExpense)
+  }
+
+  const getTotalBalance = async () => {
+    const response = await getBalance()
+
+    if (response.error) {
+      return toast({
+        title: response.title,
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
+
+    const formattedBalance = response.data
+      ? formatCurrency(response.data)
+      : 'R$ 0'
+
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+
+    return setBalance(formattedBalance)
+  }
+
+  const getSavings = async () => {
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+
+    const response = await calculateSavingsForPeriod(startOfMonth, endOfMonth)
+
+    if (response.error) {
+      return toast({
+        title: response.title,
+        description: response.message,
+        variant: 'destructive',
+      })
+    }
+
+    const formattedSavings = response.data
+      ? formatCurrency(response.data)
+      : 'R$ 0'
+
+    await new Promise((resolve) => setTimeout(resolve, 3000))
+
+    return setSavings(formattedSavings)
+  }
+
+  useEffect(() => {
+    getTotalIncome()
+  }, [])
+
+  useEffect(() => {
+    getTotalExpense()
+  }, [])
+
+  useEffect(() => {
+    getTotalBalance()
+  }, [])
+  useEffect(() => {
+    getSavings()
+  }, [])
+
   return (
     <>
       <DashboardCard className="bg-primary-foreground">
@@ -21,10 +153,7 @@ export function DashboardCards() {
           <WalletIcon />
         </DashboardCardHeader>
         <DashboardCardContent>
-          <div className="text-2xl font-bold">R$ 2.190,19</div>
-          <p className="text-xs text-muted-foreground">
-            +20.1% from last month
-          </p>
+          <div className="text-2xl font-bold">{balance}</div>
         </DashboardCardContent>
       </DashboardCard>
 
@@ -34,23 +163,7 @@ export function DashboardCards() {
           <HandCoinsIcon />
         </DashboardCardHeader>
         <DashboardCardContent>
-          <div className="text-2xl font-bold">R$ 21,30</div>
-          <p className="text-xs text-muted-foreground">
-            +20.1% from last month
-          </p>
-        </DashboardCardContent>
-      </DashboardCard>
-
-      <DashboardCard>
-        <DashboardCardHeader>
-          <DashboardCardHeaderTitle>Economia</DashboardCardHeaderTitle>
-          <PiggyBankIcon />
-        </DashboardCardHeader>
-        <DashboardCardContent>
-          <div className="text-2xl font-bold">R$ 1.875,10</div>
-          <p className="text-xs text-muted-foreground">
-            +20.1% from last month
-          </p>
+          <div className="text-2xl font-bold">{totalIncome}</div>
         </DashboardCardContent>
       </DashboardCard>
 
@@ -60,10 +173,17 @@ export function DashboardCards() {
           <TrendingDownIcon />
         </DashboardCardHeader>
         <DashboardCardContent>
-          <div className="text-2xl font-bold">R$ 19.112,00</div>
-          <p className="text-xs text-muted-foreground">
-            +20.1% from last month
-          </p>
+          <div className="text-2xl font-bold">{totalExpense}</div>
+        </DashboardCardContent>
+      </DashboardCard>
+
+      <DashboardCard>
+        <DashboardCardHeader>
+          <DashboardCardHeaderTitle>Economia</DashboardCardHeaderTitle>
+          <PiggyBankIcon />
+        </DashboardCardHeader>
+        <DashboardCardContent>
+          <div className="text-2xl font-bold">{savings}</div>
         </DashboardCardContent>
       </DashboardCard>
     </>

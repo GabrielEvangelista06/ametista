@@ -24,6 +24,7 @@ import {
 } from '@/components/ui/table'
 import { toast } from '@/components/ui/use-toast'
 import { BankInfoType } from '@/enums/BankInfoType'
+import { formatCurrency } from '@/lib/formatCurrency'
 import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons'
 import {
   ColumnDef,
@@ -127,10 +128,7 @@ export function BankAccountsDataTable({ data }: BankAccountsDataTableProps) {
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue('currentBalance'))
 
-        const formatted = new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(Math.abs(amount))
+        const formatted = formatCurrency(amount)
 
         return <div className="font-medium">{formatted}</div>
       },

@@ -21,7 +21,6 @@ import { Cross2Icon, HamburgerMenuIcon } from '@radix-ui/react-icons'
 import { motion } from 'framer-motion'
 import {
   ActivityIcon,
-  Goal,
   LandmarkIcon,
   LayoutDashboardIcon,
   TagIcon,
@@ -104,14 +103,6 @@ export function MainSidebar({ user }: MainSidebarProps) {
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
                 index={4}
-                href="/app/goals"
-                active={isActive('/app/goals')}
-              >
-                <Goal className="mr-3 h-3 w-3" />
-                Metas
-              </DashboardSidebarNavLink>
-              <DashboardSidebarNavLink
-                index={5}
                 href="/app/tags"
                 active={isActive('/app/tags')}
               >
@@ -129,21 +120,21 @@ export function MainSidebar({ user }: MainSidebarProps) {
             </DashboardSidebarNavHeader>
             <DashboardSidebarNavMain>
               <DashboardSidebarNavLink
-                index={6}
+                index={5}
                 href="/"
                 active={isActive('/')}
               >
                 Dar Feedback
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
-                index={7}
+                index={6}
                 href="/"
                 active={isActive('/')}
               >
                 Precisa de ajuda?
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
-                index={8}
+                index={7}
                 href="/"
                 active={isActive('/')}
               >
