@@ -92,6 +92,12 @@ export function DashboardLastTransactions() {
           </div>
         </>
       )}
+
+      {!isLoading && transactions.length === 0 && (
+        <div className="flex h-32 items-center justify-center text-muted-foreground">
+          Nenhuma transação encontrada
+        </div>
+      )}
     </div>
   )
 }
