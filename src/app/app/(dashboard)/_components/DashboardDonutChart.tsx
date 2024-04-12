@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
+import { CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { DonutChart } from '@tremor/react'
 
 import { getPercentageOfExpensesByCategory } from './../actions'
@@ -10,8 +12,7 @@ export function DashboardDonutChart() {
   const [categoryPercentages, setCategoryPercentages] = useState<
     { category: string; percentage: number }[]
   >([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const percentageFormatter = (value: number) => `${value}%`
 
   useEffect(() => {
@@ -20,45 +21,52 @@ export function DashboardDonutChart() {
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
     const fetchData = async () => {
-      setIsLoading(true)
-      setError(false)
-
-      try {
-        const data = await getPercentageOfExpensesByCategory(
-          startOfMonth,
-          endOfMonth,
-        )
-        setCategoryPercentages(
-          data.data.map((value) => ({
-            category: value.category,
-            percentage: Number(value.percentage.toFixed(1)),
-          })),
-        )
-      } catch (error) {
-        console.error('Erro ao pegar porcentagem', error)
-        setError(true)
-      } finally {
-        setIsLoading(false)
-      }
+      const response = await getPercentageOfExpensesByCategory(
+        startOfMonth,
+        endOfMonth,
+      )
+      setCategoryPercentages(
+        response.data.map((value) => ({
+          category: value.category,
+          percentage: Number(value.percentage.toFixed(1)),
+        })),
+      )
     }
 
     fetchData()
+
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 2500)
   }, [])
 
-  if (isLoading) {
-    return <p>Carregando dados...</p>
-  }
-
-  if (error) {
-    return <p>Erro ao carregar dados de porcentagem por categoria.</p>
-  }
-
   return (
-    <DonutChart
-      data={categoryPercentages}
-      valueFormatter={percentageFormatter}
-      category="percentage"
-      index="category"
-    />
+    <>
+      {isLoading && (
+        <>
+          <CardHeader>
+            <CardTitle>
+              <Skeleton className="h-4 w-48" />
+            </CardTitle>
+          </CardHeader>
+          <div className="flex animate-pulse items-center justify-center">
+            <Skeleton className="h-40 w-40 rounded-full" />
+          </div>
+        </>
+      )}
+      {!isLoading && (
+        <>
+          <CardHeader>
+            <CardTitle>Maiores Gastos (Categoria)</CardTitle>
+          </CardHeader>
+          <DonutChart
+            data={categoryPercentages}
+            valueFormatter={percentageFormatter}
+            category="percentage"
+            index="category"
+          />
+        </>
+      )}
+    </>
   )
 }

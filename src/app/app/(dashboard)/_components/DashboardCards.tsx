@@ -23,12 +23,14 @@ import {
   getBalance,
   getTotalForTheSelectedPeriod,
 } from '../actions'
+import { DashboardCardSkeleton } from './DashboardCardSkeleton'
 
 export function DashboardCards() {
   const [totalIncome, setTotalIncome] = useState<string>('R$ 0')
   const [totalExpense, setTotalExpense] = useState<string>('R$ 0')
   const [balance, setBalance] = useState<string>('R$ 0')
   const [savings, setSavings] = useState<string>('R$ 0')
+  const [isLoading, setIsLoading] = useState(true)
 
   const getTotalIncome = async () => {
     const now = new Date()
@@ -52,8 +54,6 @@ export function DashboardCards() {
     const formattedIncome = response.data
       ? formatCurrency(response.data)
       : 'R$ 0'
-
-    await new Promise((resolve) => setTimeout(resolve, 3000))
 
     return setTotalIncome(formattedIncome)
   }
@@ -81,8 +81,6 @@ export function DashboardCards() {
       ? formatCurrency(response.data)
       : 'R$ 0'
 
-    await new Promise((resolve) => setTimeout(resolve, 3000))
-
     return setTotalExpense(formattedExpense)
   }
 
@@ -100,8 +98,6 @@ export function DashboardCards() {
     const formattedBalance = response.data
       ? formatCurrency(response.data)
       : 'R$ 0'
-
-    await new Promise((resolve) => setTimeout(resolve, 3000))
 
     return setBalance(formattedBalance)
   }
@@ -125,67 +121,74 @@ export function DashboardCards() {
       ? formatCurrency(response.data)
       : 'R$ 0'
 
-    await new Promise((resolve) => setTimeout(resolve, 3000))
-
     return setSavings(formattedSavings)
   }
 
   useEffect(() => {
     getTotalIncome()
-  }, [])
-
-  useEffect(() => {
     getTotalExpense()
-  }, [])
-
-  useEffect(() => {
     getTotalBalance()
-  }, [])
-  useEffect(() => {
     getSavings()
+
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 2500)
   }, [])
 
   return (
     <>
-      <DashboardCard className="bg-primary-foreground">
-        <DashboardCardHeader>
-          <DashboardCardHeaderTitle>Saldo</DashboardCardHeaderTitle>
-          <WalletIcon />
-        </DashboardCardHeader>
-        <DashboardCardContent>
-          <div className="text-2xl font-bold">{balance}</div>
-        </DashboardCardContent>
-      </DashboardCard>
+      {isLoading && (
+        <>
+          <DashboardCardSkeleton />
+          <DashboardCardSkeleton />
+          <DashboardCardSkeleton />
+          <DashboardCardSkeleton />
+        </>
+      )}
 
-      <DashboardCard>
-        <DashboardCardHeader>
-          <DashboardCardHeaderTitle>Renda</DashboardCardHeaderTitle>
-          <HandCoinsIcon />
-        </DashboardCardHeader>
-        <DashboardCardContent>
-          <div className="text-2xl font-bold">{totalIncome}</div>
-        </DashboardCardContent>
-      </DashboardCard>
+      {!isLoading && (
+        <>
+          <DashboardCard className="bg-primary-foreground">
+            <DashboardCardHeader>
+              <DashboardCardHeaderTitle>Saldo</DashboardCardHeaderTitle>
+              <WalletIcon />
+            </DashboardCardHeader>
+            <DashboardCardContent>
+              <div className="text-2xl font-bold">{balance}</div>
+            </DashboardCardContent>
+          </DashboardCard>
 
-      <DashboardCard>
-        <DashboardCardHeader>
-          <DashboardCardHeaderTitle>Despesas</DashboardCardHeaderTitle>
-          <TrendingDownIcon />
-        </DashboardCardHeader>
-        <DashboardCardContent>
-          <div className="text-2xl font-bold">{totalExpense}</div>
-        </DashboardCardContent>
-      </DashboardCard>
+          <DashboardCard>
+            <DashboardCardHeader>
+              <DashboardCardHeaderTitle>Renda</DashboardCardHeaderTitle>
+              <HandCoinsIcon />
+            </DashboardCardHeader>
+            <DashboardCardContent>
+              <div className="text-2xl font-bold">{totalIncome}</div>
+            </DashboardCardContent>
+          </DashboardCard>
 
-      <DashboardCard>
-        <DashboardCardHeader>
-          <DashboardCardHeaderTitle>Economia</DashboardCardHeaderTitle>
-          <PiggyBankIcon />
-        </DashboardCardHeader>
-        <DashboardCardContent>
-          <div className="text-2xl font-bold">{savings}</div>
-        </DashboardCardContent>
-      </DashboardCard>
+          <DashboardCard>
+            <DashboardCardHeader>
+              <DashboardCardHeaderTitle>Despesas</DashboardCardHeaderTitle>
+              <TrendingDownIcon />
+            </DashboardCardHeader>
+            <DashboardCardContent>
+              <div className="text-2xl font-bold">{totalExpense}</div>
+            </DashboardCardContent>
+          </DashboardCard>
+
+          <DashboardCard>
+            <DashboardCardHeader>
+              <DashboardCardHeaderTitle>Economia</DashboardCardHeaderTitle>
+              <PiggyBankIcon />
+            </DashboardCardHeader>
+            <DashboardCardContent>
+              <div className="text-2xl font-bold">{savings}</div>
+            </DashboardCardContent>
+          </DashboardCard>
+        </>
+      )}
     </>
   )
 }

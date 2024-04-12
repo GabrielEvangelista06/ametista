@@ -4,7 +4,7 @@ import {
   PageLayoutHeaderTitle,
   PageLayoutMain,
 } from '@/components/layouts/PageLayout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import { DashboardCards } from './_components/DashboardCards'
@@ -29,27 +29,18 @@ export default function AppPage() {
             </div>
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
               <Card className="col-span-4">
-                <CardHeader>
-                  <CardTitle>Resumo Financeiro</CardTitle>
-                </CardHeader>
                 <CardContent>
                   <DashboardCharts />
                 </CardContent>
               </Card>
               <div className="col-span-3 space-y-3">
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Últimas Transações</CardTitle>
-                  </CardHeader>
                   <CardContent>
                     <DashboardLastTransactions />
                   </CardContent>
                 </Card>
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Maiores Gastos (Categoria)</CardTitle>
-                  </CardHeader>
-                  <CardContent className="h-[10.5rem]">
+                  <CardContent className="pb-3">
                     <DashboardDonutChart />
                   </CardContent>
                 </Card>

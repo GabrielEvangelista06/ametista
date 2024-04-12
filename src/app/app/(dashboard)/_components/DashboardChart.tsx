@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useState } from 'react'
 
+import { CardHeader, CardTitle } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from '@/components/ui/use-toast'
 import { TransactionTypes } from '@/enums/TransactionTypes'
 import { formatCurrency } from '@/lib/formatCurrency'
@@ -11,6 +13,7 @@ import { getTotalForTheSelectedPeriod } from '../actions'
 export function DashboardCharts() {
   const [totalIncome, setTotalIncome] = useState<number[]>([])
   const [totalExpense, setTotalExpense] = useState<number[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const getTotalIncomeForMonth = async (monthsAgo: number) => {
     const now = new Date()
@@ -98,6 +101,10 @@ export function DashboardCharts() {
       setTotalExpense(expenses)
     }
     fetchTotalExpense()
+
+    setTimeout(() => {
+      setIsLoading(false)
+    }, 2500)
   }, [])
 
   const chartdata = totalIncome.map((income, index) => {
@@ -117,14 +124,42 @@ export function DashboardCharts() {
   })
 
   return (
-    <AreaChart
-      data={chartdata.reverse()}
-      index="date"
-      categories={['Receitas', 'Despesas']}
-      colors={['indigo', 'rose']}
-      valueFormatter={formatCurrency}
-      yAxisWidth={80}
-      onValueChange={(v) => console.log(v)}
-    />
+    <>
+      {isLoading && (
+        <>
+          <CardHeader>
+            <CardTitle>
+              <Skeleton className="h-4 w-32" />
+            </CardTitle>
+          </CardHeader>
+          <div className="flex h-full flex-col items-center justify-center">
+            <div className="ml-[19rem] mt-3 flex gap-2">
+              <Skeleton className="h-4 w-20" />
+              <Skeleton className="h-4 w-20" />
+            </div>
+            <div className="mt-4">
+              <Skeleton className="h-72 w-[31rem]" />
+            </div>
+          </div>
+        </>
+      )}
+
+      {!isLoading && (
+        <>
+          <CardHeader>
+            <CardTitle>Resumo Financeiro</CardTitle>
+          </CardHeader>
+          <AreaChart
+            data={chartdata.reverse()}
+            index="date"
+            categories={['Receitas', 'Despesas']}
+            colors={['indigo', 'rose']}
+            valueFormatter={formatCurrency}
+            yAxisWidth={80}
+            onValueChange={(v) => console.log(v)}
+          />
+        </>
+      )}
+    </>
   )
 }
