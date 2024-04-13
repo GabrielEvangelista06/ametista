@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/select'
 import { cn } from '@/lib/utils'
 import { addDays, format } from 'date-fns'
-import { pt } from 'date-fns/locale/pt'
+import pt from 'date-fns/locale/pt'
 import { CalendarIcon } from 'lucide-react'
 
 import { DateSelectProps } from './types'

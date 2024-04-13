@@ -22,7 +22,7 @@ export function DashboardCardHeader({
   return (
     <CardHeader
       className={cn([
-        'className="flex pb-2" flex-row items-center justify-between space-y-0',
+        'flex flex-row items-center justify-between space-y-0 pb-2',
         className,
       ])}
     >

@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/table'
 import { toast } from '@/components/ui/use-toast'
 import { Status } from '@/enums/Status'
+import { formatCurrency } from '@/lib/formatCurrency'
 import { CaretSortIcon, DotsHorizontalIcon } from '@radix-ui/react-icons'
 import {
   ColumnDef,
@@ -209,10 +210,7 @@ export function TransactionsDataTable({ data }: TransactionsDataTableProps) {
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue('amount'))
 
-        const formatted = new Intl.NumberFormat('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
-        }).format(Math.abs(amount))
+        const formatted = formatCurrency(amount)
 
         const displayAmount =
           row.getValue('type') === 'Despesa' ||

@@ -113,9 +113,9 @@ export function IncomeUpsertSheet({
       <SheetTrigger className="w-full" asChild>
         <div ref={ref}>{children}</div>
       </SheetTrigger>
-      <SheetContent className="max-h-screen overflow-y-auto">
+      <SheetContent className="overflow-y-auto">
         <Form {...form}>
-          <form onSubmit={onSubmit} className="min-h-screen space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <SheetHeader>
               <SheetTitle>Adicionar Receita</SheetTitle>
             </SheetHeader>
@@ -217,9 +217,9 @@ export function ExpenseUpsertSheet({
       <SheetTrigger className="w-full" asChild>
         <div ref={ref}>{children}</div>
       </SheetTrigger>
-      <SheetContent className="max-h-screen overflow-y-auto">
+      <SheetContent className="overflow-y-auto">
         <Form {...form}>
-          <form onSubmit={onSubmit} className="min-h-screen space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <SheetHeader>
               <SheetTitle>Adicionar Despesa</SheetTitle>
             </SheetHeader>
@@ -345,9 +345,9 @@ export function CardExpenseUpsertSheet({
       <SheetTrigger className="w-full" asChild>
         <div ref={ref}>{children}</div>
       </SheetTrigger>
-      <SheetContent className="max-h-screen overflow-y-auto">
+      <SheetContent className="overflow-y-auto">
         <Form {...form}>
-          <form onSubmit={onSubmit} className="min-h-screen space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <SheetHeader>
               <SheetTitle>Adicionar Despesa do cartão</SheetTitle>
             </SheetHeader>
@@ -499,9 +499,9 @@ export function TransferUpsertSheet({
       <SheetTrigger className="w-full" asChild>
         <div ref={ref}>{children}</div>
       </SheetTrigger>
-      <SheetContent className="max-h-screen overflow-y-auto">
+      <SheetContent className="overflow-y-auto">
         <Form {...form}>
-          <form onSubmit={onSubmit} className="min-h-screen space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <SheetHeader>
               <SheetTitle>Adicionar Transferência</SheetTitle>
             </SheetHeader>

@@ -83,9 +83,9 @@ export function BankAccountUpsertSheet({
       <SheetTrigger className="w-full" asChild>
         <div ref={ref}>{children}</div>
       </SheetTrigger>
-      <SheetContent className="max-h-screen overflow-y-auto">
+      <SheetContent className="overflow-y-auto">
         <Form {...form}>
-          <form onSubmit={onSubmit} className="min-h-screen space-y-4">
+          <form onSubmit={onSubmit} className="space-y-4">
             <SheetHeader>
               <SheetTitle>Criar Conta</SheetTitle>
             </SheetHeader>
