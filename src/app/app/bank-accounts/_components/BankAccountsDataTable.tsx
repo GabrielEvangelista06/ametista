@@ -128,7 +128,10 @@ export function BankAccountsDataTable({ data }: BankAccountsDataTableProps) {
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue('currentBalance'))
 
-        const formatted = formatCurrency(amount)
+        const formatted =
+          amount < 0
+            ? `- ${formatCurrency(Math.abs(amount))}`
+            : formatCurrency(amount)
 
         return <div className="font-medium">{formatted}</div>
       },
