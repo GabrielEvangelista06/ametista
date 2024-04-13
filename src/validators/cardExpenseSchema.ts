@@ -3,7 +3,7 @@ import { z } from 'zod'
 export const cardExpenseSchema = z.object({
   id: z.string().optional(),
   amount: z
-    .string()
+    .string({ required_error: 'O valor é obrigatório' })
     .transform((v) => Number(v) || 0)
     .refine((value) => value > 0, {
       message: 'Valor deve ser um número positivo',
@@ -14,8 +14,12 @@ export const cardExpenseSchema = z.object({
   category: z
     .string({ required_error: 'A categoria é obrigatória' })
     .min(1, { message: 'A categoria é obrigatória' }),
-  card: z.string().optional(),
-  bill: z.string().optional(),
+  card: z.string({ required_error: 'O cartão é obrigatório' }).min(1, {
+    message: 'O cartão é obrigatório',
+  }),
+  bill: z.string({ required_error: 'O fatura é obrigatória' }).min(1, {
+    message: 'O fatura é obrigatória',
+  }),
   isInstallment: z.boolean().optional().default(false),
   isFixed: z.boolean().optional().default(false),
   date: z.date().optional(),
