@@ -15,7 +15,10 @@ export function DashboardCharts() {
   const [totalExpense, setTotalExpense] = useState<number[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
-  const getTotalIncomeForMonth = async (monthsAgo: number) => {
+  const getTotalForMonth = async (
+    transactionType: TransactionTypes,
+    monthsAgo: number,
+  ) => {
     const now = new Date()
     const startOfMonth = new Date(
       now.getFullYear(),
@@ -29,37 +32,7 @@ export function DashboardCharts() {
     )
 
     const response = await getTotalForTheSelectedPeriod(
-      TransactionTypes.INCOME,
-      startOfMonth,
-      endOfMonth,
-    )
-
-    if (response.error) {
-      return toast({
-        title: response.title,
-        description: response.message,
-        variant: 'destructive',
-      })
-    }
-
-    return response.data ?? 0
-  }
-
-  const getTotalExpenseForMonth = async (monthsAgo: number) => {
-    const now = new Date()
-    const startOfMonth = new Date(
-      now.getFullYear(),
-      now.getMonth() - monthsAgo,
-      1,
-    )
-    const endOfMonth = new Date(
-      now.getFullYear(),
-      now.getMonth() - monthsAgo + 1,
-      0,
-    )
-
-    const response = await getTotalForTheSelectedPeriod(
-      TransactionTypes.EXPENSE,
+      transactionType,
       startOfMonth,
       endOfMonth,
     )
@@ -76,31 +49,22 @@ export function DashboardCharts() {
   }
 
   useEffect(() => {
-    const fetchTotalIncome = async () => {
-      const incomes: number[] = []
+    const fetchTotal = async (
+      transactionType: TransactionTypes,
+      setter: React.Dispatch<React.SetStateAction<number[]>>,
+    ) => {
+      const totals: number[] = []
       for (let i = 0; i < 5; i++) {
-        const income = await getTotalIncomeForMonth(i)
-        if (typeof income === 'number') {
-          incomes.push(income)
+        const total = await getTotalForMonth(transactionType, i)
+        if (typeof total === 'number') {
+          totals.push(total)
         }
       }
-      setTotalIncome(incomes)
+      setter(totals)
     }
-    fetchTotalIncome()
-  }, [])
 
-  useEffect(() => {
-    const fetchTotalExpense = async () => {
-      const expenses: number[] = []
-      for (let i = 0; i < 5; i++) {
-        const expense = await getTotalExpenseForMonth(i)
-        if (typeof expense === 'number') {
-          expenses.push(expense)
-        }
-      }
-      setTotalExpense(expenses)
-    }
-    fetchTotalExpense()
+    fetchTotal(TransactionTypes.INCOME, setTotalIncome)
+    fetchTotal(TransactionTypes.EXPENSE, setTotalExpense)
 
     setTimeout(() => {
       setIsLoading(false)

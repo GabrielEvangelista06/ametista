@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 
 import { toast } from '@/components/ui/use-toast'
 import { TransactionTypes } from '@/enums/TransactionTypes'
@@ -32,15 +32,16 @@ export function DashboardCards() {
   const [savings, setSavings] = useState<string>('R$ 0')
   const [isLoading, setIsLoading] = useState(true)
 
-  const getTotalIncome = async () => {
-    const now = new Date()
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-
+  const fetchData = async (
+    transactionType: TransactionTypes,
+    start: Date,
+    end: Date,
+    setter: Dispatch<SetStateAction<string>>,
+  ) => {
     const response = await getTotalForTheSelectedPeriod(
-      TransactionTypes.INCOME,
-      startOfMonth,
-      endOfMonth,
+      transactionType,
+      start,
+      end,
     )
 
     if (response.error) {
@@ -51,37 +52,9 @@ export function DashboardCards() {
       })
     }
 
-    const formattedIncome = response.data
-      ? formatCurrency(response.data)
-      : 'R$ 0'
+    const formattedData = response.data ? formatCurrency(response.data) : 'R$ 0'
 
-    return setTotalIncome(formattedIncome)
-  }
-
-  const getTotalExpense = async () => {
-    const now = new Date()
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
-
-    const response = await getTotalForTheSelectedPeriod(
-      TransactionTypes.EXPENSE,
-      startOfMonth,
-      endOfMonth,
-    )
-
-    if (response.error) {
-      return toast({
-        title: response.title,
-        description: response.message,
-        variant: 'destructive',
-      })
-    }
-
-    const formattedExpense = response.data
-      ? formatCurrency(response.data)
-      : 'R$ 0'
-
-    return setTotalExpense(formattedExpense)
+    return setter(formattedData)
   }
 
   const getTotalBalance = async () => {
@@ -125,8 +98,17 @@ export function DashboardCards() {
   }
 
   useEffect(() => {
-    getTotalIncome()
-    getTotalExpense()
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+
+    fetchData(TransactionTypes.INCOME, startOfMonth, endOfMonth, setTotalIncome)
+    fetchData(
+      TransactionTypes.EXPENSE,
+      startOfMonth,
+      endOfMonth,
+      setTotalExpense,
+    )
     getTotalBalance()
     getSavings()
 
