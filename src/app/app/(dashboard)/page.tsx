@@ -9,8 +9,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 import { DashboardCards } from './_components/DashboardCards'
 import { DashboardCharts } from './_components/DashboardChart'
-import { DashboardDonutChart } from './_components/DashboardDonutChart'
 import { DashboardLastTransactions } from './_components/DashboardLastTransactions'
+import { DashboardDonutChart } from './_components/DashboardPieChart'
 
 export default function AppPage() {
   return (

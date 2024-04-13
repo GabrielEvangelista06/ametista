@@ -266,47 +266,49 @@ export async function getPercentageOfExpensesByCategory(
       }
     }
 
-    const categoryPercentages = await Promise.all(
-      transactions.map(async (transaction) => {
-        const category = 'Sem categoria'
+    const getCategoryPercentage = async (transaction: {
+      categoryId: string
+      amount: number
+    }) => {
+      let category = 'Sem categoria'
 
-        if (transaction.categoryId) {
-          let categoryData = ''
+      if (transaction.categoryId) {
+        const foundCategory = defaultCategories.find(
+          (defaultCategory) => defaultCategory.id === transaction.categoryId,
+        )
 
-          defaultCategories.find((category) => {
-            if (category.id === transaction.categoryId) {
-              categoryData = category.name
-            }
-            return categoryData
+        if (foundCategory) {
+          category = foundCategory.name
+        } else {
+          const dbCategory = await db.category.findUnique({
+            where: {
+              id: transaction.categoryId,
+              userId: session.user.id,
+            },
           })
-
-          if (categoryData !== '') {
-            return {
-              category: categoryData,
-              percentage: (transaction.amount / totalExpense) * 100,
-            }
-          } else {
-            categoryData =
-              (
-                await db.category.findUnique({
-                  where: {
-                    id: transaction.categoryId,
-                    userId: session.user.id,
-                  },
-                })
-              )?.name ?? 'Sem categoria'
+          if (dbCategory) {
+            category = dbCategory.name
           }
         }
+      }
 
-        return {
-          category,
-          percentage: (transaction.amount / totalExpense) * 100,
-        }
-      }),
+      return {
+        category,
+        percentage: (transaction.amount / totalExpense) * 100,
+      }
+    }
+
+    const categoryPercentages = await Promise.all(
+      transactions.map((transaction) =>
+        getCategoryPercentage({
+          categoryId: transaction.categoryId || '',
+          amount: transaction.amount,
+        }),
+      ),
     )
 
     return {
-      data: Object.values(categoryPercentages),
+      data: categoryPercentages,
       title: 'Dados carregados',
       message: 'Porcentagem de despesas por categoria carregada com sucesso!',
       error: false,

@@ -6,7 +6,7 @@ import { CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { DonutChart } from '@tremor/react'
 
-import { getPercentageOfExpensesByCategory } from './../actions'
+import { getPercentageOfExpensesByCategory } from '../actions'
 
 export function DashboardDonutChart() {
   const [categoryPercentages, setCategoryPercentages] = useState<
@@ -64,6 +64,7 @@ export function DashboardDonutChart() {
             valueFormatter={percentageFormatter}
             category="percentage"
             index="category"
+            variant="pie"
           />
         </>
       )}
