@@ -12,26 +12,26 @@ import { getUserTransactions } from '../transactions/actions'
 
 export async function getTransactionsForTheSelectedPeriod(
   userId: string,
-  type: TransactionTypes,
+  transactionTypes: TransactionTypes[],
   startOfPeriod: Date,
   endOfPeriod: Date,
 ) {
-  const transactions = await db.transaction.findMany({
+  return await db.transaction.findMany({
     where: {
       userId,
-      type,
-      createdAt: {
+      type: {
+        in: transactionTypes,
+      },
+      date: {
         gte: startOfPeriod,
         lte: endOfPeriod,
       },
     },
   })
-
-  return transactions
 }
 
 export async function getTotalForTheSelectedPeriod(
-  type: TransactionTypes,
+  type: TransactionTypes[],
   startOfPeriod: Date,
   endOfPeriod: Date,
 ) {
@@ -71,7 +71,7 @@ export async function getTotalForTheSelectedPeriod(
     return {
       data: total,
       title: 'Dados carregados',
-      message: `${type === TransactionTypes.INCOME ? 'Receitas' : 'Despesas'} do mês atual carregadas com sucesso!`,
+      message: 'Transações do mês atual carregadas com sucesso!',
       error: false,
     }
   } catch (error) {
@@ -160,12 +160,12 @@ export async function calculateSavingsForPeriod(
 ): Promise<{ data: number; title: string; message: string; error: boolean }> {
   try {
     const totalIncome = await getTotalForTheSelectedPeriod(
-      TransactionTypes.INCOME,
+      [TransactionTypes.INCOME],
       startOfPeriod,
       endOfPeriod,
     )
     const totalExpense = await getTotalForTheSelectedPeriod(
-      TransactionTypes.EXPENSE,
+      [TransactionTypes.EXPENSE, TransactionTypes.CARD_EXPENSE],
       startOfPeriod,
       endOfPeriod,
     )
@@ -238,7 +238,7 @@ export async function getPercentageOfExpensesByCategory(
 
     const transactions = await getTransactionsForTheSelectedPeriod(
       session.user.id,
-      TransactionTypes.EXPENSE,
+      [TransactionTypes.EXPENSE, TransactionTypes.CARD_EXPENSE],
       startOfPeriod,
       endOfPeriod,
     )

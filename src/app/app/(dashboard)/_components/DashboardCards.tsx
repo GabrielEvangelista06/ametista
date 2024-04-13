@@ -33,7 +33,7 @@ export function DashboardCards() {
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchData = async (
-    transactionType: TransactionTypes,
+    transactionType: TransactionTypes[],
     start: Date,
     end: Date,
     setter: Dispatch<SetStateAction<string>>,
@@ -102,9 +102,14 @@ export function DashboardCards() {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-    fetchData(TransactionTypes.INCOME, startOfMonth, endOfMonth, setTotalIncome)
     fetchData(
-      TransactionTypes.EXPENSE,
+      [TransactionTypes.INCOME],
+      startOfMonth,
+      endOfMonth,
+      setTotalIncome,
+    )
+    fetchData(
+      [TransactionTypes.EXPENSE, TransactionTypes.CARD_EXPENSE],
       startOfMonth,
       endOfMonth,
       setTotalExpense,

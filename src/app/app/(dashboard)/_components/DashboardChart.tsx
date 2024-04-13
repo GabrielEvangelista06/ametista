@@ -16,7 +16,7 @@ export function DashboardCharts() {
   const [isLoading, setIsLoading] = useState(true)
 
   const getTotalForMonth = async (
-    transactionType: TransactionTypes,
+    transactionType: TransactionTypes[],
     monthsAgo: number,
   ) => {
     const now = new Date()
@@ -50,7 +50,7 @@ export function DashboardCharts() {
 
   useEffect(() => {
     const fetchTotal = async (
-      transactionType: TransactionTypes,
+      transactionType: TransactionTypes[],
       setter: React.Dispatch<React.SetStateAction<number[]>>,
     ) => {
       const totals: number[] = []
@@ -63,8 +63,8 @@ export function DashboardCharts() {
       setter(totals)
     }
 
-    fetchTotal(TransactionTypes.INCOME, setTotalIncome)
-    fetchTotal(TransactionTypes.EXPENSE, setTotalExpense)
+    fetchTotal([TransactionTypes.INCOME], setTotalIncome)
+    fetchTotal([TransactionTypes.EXPENSE], setTotalExpense)
 
     setTimeout(() => {
       setIsLoading(false)
