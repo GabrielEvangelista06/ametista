@@ -16,23 +16,18 @@ export async function getTransactionsForTheSelectedPeriod(
   startOfPeriod: Date,
   endOfPeriod: Date,
 ) {
-  try {
-    const transactions = await db.transaction.findMany({
-      where: {
-        userId,
-        type,
-        createdAt: {
-          gte: startOfPeriod,
-          lte: endOfPeriod,
-        },
+  const transactions = await db.transaction.findMany({
+    where: {
+      userId,
+      type,
+      createdAt: {
+        gte: startOfPeriod,
+        lte: endOfPeriod,
       },
-    })
+    },
+  })
 
-    return transactions
-  } catch (error) {
-    console.error('Error fetching transactions:', error)
-    throw error
-  }
+  return transactions
 }
 
 export async function getTotalForTheSelectedPeriod(
@@ -150,7 +145,6 @@ export async function getThreeLastTransactions() {
       error: false,
     }
   } catch (error) {
-    console.error('Error fetching transactions:', error)
     return {
       data: null,
       title: 'Erro ao pegar dados',
