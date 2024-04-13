@@ -190,15 +190,6 @@ export async function calculateSavingsForPeriod(
 
     const savings = totalIncome.data - totalExpense.data
 
-    if (savings < 0) {
-      return {
-        data: savings,
-        error: false,
-        title: 'Gastos maiores que receitas',
-        message: 'Você gastou mais do que recebeu nesse período.',
-      }
-    }
-
     return {
       data: savings,
       error: false,

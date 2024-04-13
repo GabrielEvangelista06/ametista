@@ -68,11 +68,15 @@ export function DashboardCards() {
       })
     }
 
-    const formattedBalance = response.data
-      ? formatCurrency(response.data)
-      : 'R$ 0'
+    let formattedSavings = 'R$ 0'
+    if (response.data) {
+      formattedSavings =
+        response.data < 0
+          ? `- ${formatCurrency(Math.abs(response.data))}`
+          : formatCurrency(response.data)
+    }
 
-    return setBalance(formattedBalance)
+    return setBalance(formattedSavings)
   }
 
   const getSavings = async () => {
@@ -90,9 +94,13 @@ export function DashboardCards() {
       })
     }
 
-    const formattedSavings = response.data
-      ? formatCurrency(response.data)
-      : 'R$ 0'
+    let formattedSavings = 'R$ 0'
+    if (response.data) {
+      formattedSavings =
+        response.data < 0
+          ? `- ${formatCurrency(Math.abs(response.data))}`
+          : formatCurrency(response.data)
+    }
 
     return setSavings(formattedSavings)
   }
