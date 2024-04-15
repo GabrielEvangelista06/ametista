@@ -101,7 +101,7 @@ export async function upsertBankInfo(input: z.infer<typeof bankInfoSchema>) {
     return {
       data: null,
       title: 'Erro ao salvar conta',
-      message: 'Usuário não encontrado',
+      message: 'Usuário não autorizado',
       error: true,
     }
   }
