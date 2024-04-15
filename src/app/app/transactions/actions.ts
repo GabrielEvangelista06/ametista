@@ -103,19 +103,9 @@ export async function getUserCategories() {
 export async function getUserCards() {
   const session = await getServerSession(authConfig)
 
-  const cards = await db.card.findMany({
+  return await db.card.findMany({
     where: { userId: session?.user?.id },
-    select: {
-      id: true,
-      description: true,
-      limit: true,
-      flag: true,
-      closingDate: true,
-      dueDate: true,
-    },
   })
-
-  return cards
 }
 
 export async function getUserBillsByCardId(cardId: string | undefined) {
