@@ -21,6 +21,7 @@ import { Cross2Icon, HamburgerMenuIcon } from '@radix-ui/react-icons'
 import { motion } from 'framer-motion'
 import {
   ActivityIcon,
+  CreditCardIcon,
   LandmarkIcon,
   LayoutDashboardIcon,
   TagIcon,
@@ -103,6 +104,14 @@ export function MainSidebar({ user }: MainSidebarProps) {
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
                 index={4}
+                href="/app/cards"
+                active={isActive('/app/card')}
+              >
+                <CreditCardIcon className="mr-3 h-3 w-3" />
+                Cartões
+              </DashboardSidebarNavLink>
+              <DashboardSidebarNavLink
+                index={5}
                 href="/app/tags"
                 active={isActive('/app/tags')}
               >
@@ -120,21 +129,21 @@ export function MainSidebar({ user }: MainSidebarProps) {
             </DashboardSidebarNavHeader>
             <DashboardSidebarNavMain>
               <DashboardSidebarNavLink
-                index={5}
+                index={6}
                 href="/"
                 active={isActive('/')}
               >
                 Dar Feedback
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
-                index={6}
+                index={7}
                 href="/"
                 active={isActive('/')}
               >
                 Precisa de ajuda?
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
-                index={7}
+                index={8}
                 href="/"
                 active={isActive('/')}
               >
