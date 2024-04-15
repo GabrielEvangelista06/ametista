@@ -91,14 +91,14 @@ model Transaction {
 }
 
 model BankInfo {
-  id              String        @id @default(cuid())
-  currentBalance  Float
-  name String
-  type     String
-  transactions    Transaction[]
-  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId          String
-  cards           Card[]
+  id             String        @id @default(cuid())
+  currentBalance Float
+  name           String
+  type           String
+  transactions   Transaction[]
+  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         String
+  cards          Card[]
 }
 
 model Card {
@@ -106,16 +106,16 @@ model Card {
   description String
   limit       Float
   flag        String
-  closingDate Int
-  dueDate     Int
+  closingDay  Int
+  dueDay      Int
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  bankInfo    BankInfo      @relation(fields: [bankInfoId], references: [id], onDelete: Cascade)
-  bankInfoId  String
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId      String
-  bills       Bill[]
+  bankInfo     BankInfo      @relation(fields: [bankInfoId], references: [id], onDelete: Cascade)
+  bankInfoId   String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
+  bills        Bill[]
   transactions Transaction[]
 }
 
@@ -128,8 +128,8 @@ model Bill {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  card        Card          @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  cardId      String
+  card         Card          @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  cardId       String
   transactions Transaction[]
 }
 
