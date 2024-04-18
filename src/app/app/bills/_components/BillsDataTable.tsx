@@ -113,12 +113,14 @@ export function BillsDataTable({ data }: BillsDataTableProps) {
       cell: ({ row }) => {
         const status: string = row.getValue('status')
 
-        const statusVariant: 'secondary' | 'default' | 'destructive' =
+        const statusVariant: 'secondary' | 'default' | 'destructive' | 'paid' =
           status === StatusBill.OPEN
             ? 'default'
-            : status === StatusBill.CLOSED
+            : status === StatusBill.LATE
               ? 'destructive'
-              : 'secondary'
+              : status === StatusBill.CLOSED
+                ? 'secondary'
+                : 'paid'
 
         return (
           <Badge variant={statusVariant} className="capitalize">
