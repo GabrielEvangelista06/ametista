@@ -57,6 +57,7 @@ const customSortFn = (rowA: Row<Bill>, rowB: Row<Bill>, columnId: string) => {
       LATE: 1,
       OPEN: 2,
       CLOSED: 3,
+      PAID: 4,
     }
 
     const priorityA = priorities[statusA as string]
