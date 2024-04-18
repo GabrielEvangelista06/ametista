@@ -24,6 +24,7 @@ import {
   CreditCardIcon,
   LandmarkIcon,
   LayoutDashboardIcon,
+  ReceiptTextIcon,
   TagIcon,
 } from 'lucide-react'
 
@@ -105,13 +106,21 @@ export function MainSidebar({ user }: MainSidebarProps) {
               <DashboardSidebarNavLink
                 index={4}
                 href="/app/cards"
-                active={isActive('/app/card')}
+                active={isActive('/app/cards')}
               >
                 <CreditCardIcon className="mr-3 h-3 w-3" />
                 Cartões
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
                 index={5}
+                href="/app/bills"
+                active={isActive('/app/bills')}
+              >
+                <ReceiptTextIcon className="mr-3 h-3 w-3" />
+                Faturas
+              </DashboardSidebarNavLink>
+              <DashboardSidebarNavLink
+                index={6}
                 href="/app/tags"
                 active={isActive('/app/tags')}
               >
@@ -129,21 +138,21 @@ export function MainSidebar({ user }: MainSidebarProps) {
             </DashboardSidebarNavHeader>
             <DashboardSidebarNavMain>
               <DashboardSidebarNavLink
-                index={6}
+                index={7}
                 href="/"
                 active={isActive('/')}
               >
                 Dar Feedback
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
-                index={7}
+                index={8}
                 href="/"
                 active={isActive('/')}
               >
                 Precisa de ajuda?
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
-                index={8}
+                index={9}
                 href="/"
                 active={isActive('/')}
               >
