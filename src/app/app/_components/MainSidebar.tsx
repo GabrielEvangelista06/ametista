@@ -121,8 +121,8 @@ export function MainSidebar({ user }: MainSidebarProps) {
               </DashboardSidebarNavLink>
               <DashboardSidebarNavLink
                 index={6}
-                href="/app/tags"
-                active={isActive('/app/tags')}
+                href="/app/categories"
+                active={isActive('/app/categories')}
               >
                 <TagIcon className="mr-3 h-3 w-3" />
                 Categorias
