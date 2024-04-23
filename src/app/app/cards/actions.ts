@@ -16,11 +16,36 @@ import { Card } from './types'
 export async function getUserCards() {
   const session = await getServerSession(authConfig)
 
-  return db.card.findMany({
+  const cards = await db.card.findMany({
     where: {
       userId: session?.user?.id,
     },
   })
+
+  const cardsWithBankInfo = await Promise.all(
+    cards.map(async (card) => {
+      let bankInfoName = 'Sem informação do banco'
+
+      if (card.bankInfoId) {
+        const bankInfoNameFound = await db.bankInfo.findUnique({
+          where: {
+            id: card.bankInfoId,
+          },
+          select: {
+            name: true,
+          },
+        })
+
+        if (bankInfoNameFound && bankInfoNameFound.name) {
+          bankInfoName = bankInfoNameFound.name
+        }
+      }
+
+      return { ...card, bankInfoId: bankInfoName }
+    }),
+  )
+
+  return cardsWithBankInfo
 }
 
 export async function upsertCard(input: z.infer<typeof cardSchema>) {
