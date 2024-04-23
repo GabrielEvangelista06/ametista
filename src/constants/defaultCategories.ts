@@ -36,12 +36,6 @@ export const defaultCategories = [
     categoryType: 'income',
   },
   {
-    id: 'others',
-    name: 'Outros',
-    value: 'others',
-    categoryType: 'income',
-  },
-  {
     id: 'refuel',
     name: 'Abastecer',
     value: 'refuel',
@@ -142,5 +136,11 @@ export const defaultCategories = [
     name: 'Viagem',
     value: 'travel',
     categoryType: 'expense',
+  },
+  {
+    id: 'others',
+    name: 'Outros',
+    value: 'others',
+    categoryType: 'all',
   },
 ]
