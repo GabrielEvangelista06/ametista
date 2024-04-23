@@ -55,8 +55,8 @@ export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
       description: '',
       limit: 0,
       flag: '',
-      closingDay: 1,
-      dueDay: 1,
+      closingDay: 0,
+      dueDay: 0,
       bankInfo: '',
     },
   })
@@ -99,9 +99,12 @@ export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Saldo atual</FormLabel>
+                  <FormLabel>Descrição do cartão</FormLabel>
                   <FormControl>
-                    <Input placeholder="Descrição do cartão" {...field} />
+                    <Input
+                      placeholder="Descrição que deseja para identificar o cartão"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
