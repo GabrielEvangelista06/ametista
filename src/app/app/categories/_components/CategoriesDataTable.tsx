@@ -14,6 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { Sheet, SheetTrigger } from '@/components/ui/sheet'
 import {
   Table,
   TableBody,
@@ -41,6 +42,7 @@ import { ChevronDownIcon } from 'lucide-react'
 
 import { deleteCategory } from '../actions'
 import { Category } from '../types'
+import { EditCategory } from './EditCategory'
 
 type CardsDataTableProps = {
   data: Category[]
@@ -138,32 +140,37 @@ export function CategoriesDataTable({ data }: CardsDataTableProps) {
       id: 'actions',
       enableHiding: false,
       cell: ({ row }) => {
-        const transaction = row.original
+        const category = row.original
 
         return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir menu</span>
-                <DotsHorizontalIcon className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(transaction.id)}
-              >
-                Copiar ID
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => handleDeleteCategory(transaction)}
-              >
-                Excluir
-              </DropdownMenuItem>
-              <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <Sheet>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Abrir menu</span>
+                  <DotsHorizontalIcon className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => navigator.clipboard.writeText(category.id)}
+                >
+                  Copiar ID
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => handleDeleteCategory(category)}
+                >
+                  Excluir
+                </DropdownMenuItem>
+                <SheetTrigger asChild>
+                  <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
+                </SheetTrigger>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <EditCategory category={category} />
+          </Sheet>
         )
       },
     },

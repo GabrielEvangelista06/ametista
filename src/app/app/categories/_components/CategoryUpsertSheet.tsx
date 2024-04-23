@@ -36,12 +36,14 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
 import { upsertCategory } from '../actions'
+import { Category } from '../types'
 
 type CardSheetProps = {
-  children: ReactNode
+  children?: ReactNode
+  category?: Category
 }
 
-export function CategoryUpsertSheet({ children }: CardSheetProps) {
+export function CategoryUpsertSheet({ children, category }: CardSheetProps) {
   const ref = useRef<HTMLDivElement>(null)
 
   const router = useRouter()
@@ -49,8 +51,8 @@ export function CategoryUpsertSheet({ children }: CardSheetProps) {
   const form = useForm<z.infer<typeof categorySchema>>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
-      name: '',
-      type: CategoryType.EXPENSE,
+      name: category?.name || '',
+      type: (category?.categoryType as CategoryType) || CategoryType.EXPENSE,
     },
   })
 
