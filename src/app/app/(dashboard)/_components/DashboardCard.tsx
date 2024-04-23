@@ -9,7 +9,7 @@ type DashboardCardProps<T = any> = {
 
 export function DashboardCard({ className, children }: DashboardCardProps) {
   return (
-    <Card className={cn(['transition-all hover:scale-90'], className)}>
+    <Card className={cn(['transition-all hover:scale-105'], className)}>
       {children}
     </Card>
   )
