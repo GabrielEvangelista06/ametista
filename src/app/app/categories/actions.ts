@@ -32,8 +32,6 @@ export async function upsertCategory(input: z.infer<typeof categorySchema>) {
 
   const { id, name, type } = input
 
-  console.log(id)
-
   if (id) {
     const category = await db.category.findUnique({
       where: { id, userId: session.user.id },

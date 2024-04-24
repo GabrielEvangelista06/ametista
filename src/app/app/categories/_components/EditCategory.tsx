@@ -47,13 +47,11 @@ export function EditCategory({ category }: EditCategoryProps) {
     defaultValues: {
       id: category.id,
       name: category.name || '',
-      type: category?.categoryType as CategoryType,
+      type: category.categoryType as CategoryType,
     },
   })
 
   const onSubmit = form.handleSubmit(async (data) => {
-    console.log(data)
-
     const response = await upsertCategory(data)
 
     if (response.error) {
@@ -77,7 +75,7 @@ export function EditCategory({ category }: EditCategoryProps) {
       <Form {...form}>
         <form onSubmit={onSubmit} className="space-y-4">
           <SheetHeader>
-            <SheetTitle>Criar Cartão</SheetTitle>
+            <SheetTitle>Editar Categoria</SheetTitle>
           </SheetHeader>
 
           <FormField

@@ -165,7 +165,7 @@ export function CategoriesDataTable({ data }: CardsDataTableProps) {
                   Excluir
                 </DropdownMenuItem>
                 <SheetTrigger asChild>
-                  <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
+                  <DropdownMenuItem>Editar</DropdownMenuItem>
                 </SheetTrigger>
               </DropdownMenuContent>
             </DropdownMenu>
