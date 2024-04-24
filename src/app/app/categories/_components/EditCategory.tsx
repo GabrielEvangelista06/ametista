@@ -123,7 +123,7 @@ export function EditCategory({ category }: EditCategoryProps) {
           />
 
           <SheetFooter className="mt-auto">
-            <Button type="submit">Criar</Button>
+            <Button type="submit">Atualizar</Button>
           </SheetFooter>
         </form>
       </Form>
