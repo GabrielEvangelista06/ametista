@@ -105,7 +105,8 @@ export function IncomeUpsertSheet({
   const allCategories = defaultCategories.concat(dataCategories || [])
 
   const filteredCategories = allCategories?.filter(
-    (category) => category.categoryType === 'income',
+    (category) =>
+      category.categoryType === 'income' || category.categoryType === 'all',
   )
 
   return (
@@ -209,7 +210,8 @@ export function ExpenseUpsertSheet({
   const allCategories = defaultCategories.concat(dataCategories || [])
 
   const filteredCategories = allCategories?.filter(
-    (category) => category.categoryType === 'expense',
+    (category) =>
+      category.categoryType === 'expense' || category.categoryType === 'all',
   )
 
   return (
@@ -314,7 +316,8 @@ export function CardExpenseUpsertSheet({
   const allCategories = defaultCategories.concat(dataCategories || [])
 
   const filteredCategories = allCategories?.filter(
-    (category) => category.categoryType === 'expense',
+    (category) =>
+      category.categoryType === 'expense' || category.categoryType === 'all',
   )
 
   const [bills, setBillings] = useState<Bill[]>([])

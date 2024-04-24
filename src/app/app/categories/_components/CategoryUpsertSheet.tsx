@@ -30,39 +30,32 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { toast } from '@/components/ui/use-toast'
-import { CardFlagsDescriptions } from '@/enums/CardFlags'
-import { cardSchema } from '@/validators/cardSchema'
+import { CategoryType, CategoryTypeDescriptions } from '@/enums/CategoryType'
+import { categorySchema } from '@/validators/categorySchema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 
-import { BankInfo } from '../../bank-accounts/types'
-import { BankAccountSelect } from '../../transactions/_components/BankAccountSelect'
-import { upsertCard } from '../actions'
+import { upsertCategory } from '../actions'
 
 type CardSheetProps = {
-  children: ReactNode
-  dataBankInfos: BankInfo[]
+  children?: ReactNode
 }
 
-export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
+export function CategoryUpsertSheet({ children }: CardSheetProps) {
   const ref = useRef<HTMLDivElement>(null)
 
   const router = useRouter()
 
-  const form = useForm<z.infer<typeof cardSchema>>({
-    resolver: zodResolver(cardSchema),
+  const form = useForm<z.infer<typeof categorySchema>>({
+    resolver: zodResolver(categorySchema),
     defaultValues: {
-      description: '',
-      limit: 0,
-      flag: '',
-      closingDay: 0,
-      dueDay: 0,
-      bankInfo: '',
+      name: '',
+      type: CategoryType.EXPENSE,
     },
   })
 
   const onSubmit = form.handleSubmit(async (data) => {
-    const response = await upsertCard(data)
+    const response = await upsertCategory(data)
 
     if (response.error) {
       return toast({
@@ -91,20 +84,17 @@ export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
         <Form {...form}>
           <form onSubmit={onSubmit} className="space-y-4">
             <SheetHeader>
-              <SheetTitle>Criar Cartão</SheetTitle>
+              <SheetTitle>Criar Categoria</SheetTitle>
             </SheetHeader>
 
             <FormField
               control={form.control}
-              name="description"
+              name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Descrição do cartão</FormLabel>
+                  <FormLabel>Nome</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Descrição que deseja para identificar o cartão"
-                      {...field}
-                    />
+                    <Input placeholder="Nome da categoria" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -113,21 +103,7 @@ export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
 
             <FormField
               control={form.control}
-              name="limit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Limite</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Limite do cartão" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="flag"
+              name="type"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Tipo</FormLabel>
@@ -137,11 +113,11 @@ export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecione a bandeira" />
+                        <SelectValue placeholder="Selecione o tipo da categoria" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {Object.entries(CardFlagsDescriptions).map(
+                      {Object.entries(CategoryTypeDescriptions).map(
                         ([value, description]) => (
                           <SelectItem key={value} value={value}>
                             {description}
@@ -155,46 +131,8 @@ export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="closingDay"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dia do fechamento</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Dia que o cartão vira" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="dueDay"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Dia do vencimento</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Dia que fatura do cartão vence"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <BankAccountSelect
-              form={form}
-              label="Conta"
-              name="bankInfo"
-              data={dataBankInfos}
-            />
-
             <SheetFooter className="mt-auto">
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit">Criar</Button>
             </SheetFooter>
           </form>
         </Form>
