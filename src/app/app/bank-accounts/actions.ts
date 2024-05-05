@@ -14,6 +14,7 @@ export async function getUserBankInfos() {
 
   const bankInfos = await db.bankInfo.findMany({
     where: { userId: session?.user?.id },
+    orderBy: { createdAt: 'desc' },
   })
 
   const enrichedBankInfos = await Promise.all(
@@ -61,7 +62,7 @@ export async function deleteBankInfo(input: z.infer<typeof deleteSchema>) {
     }
   }
 
-  const transaction = await db.transaction.findUnique({
+  const bankInfo = await db.bankInfo.findUnique({
     where: {
       id: input.id,
       userId: session.user.id,
@@ -71,7 +72,7 @@ export async function deleteBankInfo(input: z.infer<typeof deleteSchema>) {
     },
   })
 
-  if (!transaction) {
+  if (!bankInfo) {
     return {
       data: null,
       title: 'Erro ao deletar conta',
@@ -80,9 +81,9 @@ export async function deleteBankInfo(input: z.infer<typeof deleteSchema>) {
     }
   }
 
-  await db.transaction.delete({
+  await db.bankInfo.delete({
     where: {
-      id: transaction.id,
+      id: bankInfo.id,
     },
   })
 

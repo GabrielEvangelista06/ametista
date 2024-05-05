@@ -54,7 +54,7 @@ export function BillDetails({ bill }: BillDetailsProps) {
             </div>
           ))
         ) : (
-          <p>Não há transações para essa fatura.</p>
+          <p>Não há gastos para essa fatura.</p>
         )}
       </div>
     </DialogContent>

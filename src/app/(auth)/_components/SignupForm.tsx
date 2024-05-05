@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { Button } from '@/components/ui/button'
@@ -12,16 +13,25 @@ import { api } from '@/lib/api'
 import { AuthFieldProps } from '@/props/forms/FieldProps'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { motion } from 'framer-motion'
+import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import { z } from 'zod'
 
 import { Field } from '../../../components/forms/Field'
-import { Form } from '../../../components/ui/form'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from '../../../components/ui/form'
 import { registerSchema } from '../../../validators/registerSchema'
 import { SocialLogin } from './SocialLogin'
 
 type Input = z.infer<typeof registerSchema>
 
 export function SignupForm() {
+  const [showPassword, setShowPassword] = useState(false)
+
   const router = useRouter()
   const { toast } = useToast()
 
@@ -92,11 +102,37 @@ export function SignupForm() {
                       type="email"
                     />
 
-                    <Field
-                      form={form as AuthFieldProps['form']}
+                    <FormField
+                      control={form.control}
                       name={AuthFieldNameEnum.PASSWORD}
-                      placeholder="Senha"
-                      type="password"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <div className="relative">
+                              <Input
+                                placeholder="Digite uma senha segura"
+                                {...field}
+                                type={showPassword ? 'text' : 'password'}
+                              />
+                              <Button
+                                onClick={() => setShowPassword(!showPassword)}
+                                type="button"
+                                size="icon"
+                                variant="ghost"
+                                className="absolute right-2 top-1/2 h-5 w-5 -translate-y-1/2 transform"
+                              >
+                                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                              </Button>
+                            </div>
+                          </FormControl>
+                          <FormMessage>
+                            {
+                              form.formState.errors[AuthFieldNameEnum.PASSWORD]
+                                ?.message
+                            }
+                          </FormMessage>
+                        </FormItem>
+                      )}
                     />
                   </div>
                   <Button

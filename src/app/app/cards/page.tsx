@@ -33,7 +33,7 @@ export default async function CardsPage() {
         </PageLayoutHeaderNav>
       </PageLayoutHeader>
       <PageLayoutMain>
-        <CardsDataTable data={cards} />
+        <CardsDataTable data={cards} dataBankInfos={bankInfos} />
       </PageLayoutMain>
     </PageLayout>
   )

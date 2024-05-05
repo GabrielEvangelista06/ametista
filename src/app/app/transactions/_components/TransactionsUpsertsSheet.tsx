@@ -71,7 +71,6 @@ export function IncomeUpsertSheet({
   const form = useForm<InputDefault>({
     resolver: zodResolver(incomeSchema),
     defaultValues: {
-      amount: 0,
       isPaid: false,
       description: '',
       category: '',
@@ -125,7 +124,7 @@ export function IncomeUpsertSheet({
               form={form}
               name="amount"
               label="Valor da receita"
-              placeholder="Digite o valor da receita"
+              placeholder="Ponto/virgula somente para separar centavos"
               type="number"
             />
 
@@ -176,7 +175,6 @@ export function ExpenseUpsertSheet({
   const form = useForm<z.infer<typeof expenseSchema>>({
     resolver: zodResolver(expenseSchema),
     defaultValues: {
-      amount: 0,
       isPaid: false,
       description: '',
       category: '',
@@ -230,7 +228,7 @@ export function ExpenseUpsertSheet({
               form={form}
               name="amount"
               label="Valor da despesa"
-              placeholder="Digite o valor da despesa"
+              placeholder="Ponto/virgula somente para separar centavos"
               type="number"
             />
 
@@ -279,7 +277,6 @@ export function CardExpenseUpsertSheet({
   const form = useForm<InputCardExpense>({
     resolver: zodResolver(cardExpenseSchema),
     defaultValues: {
-      amount: 0,
       description: '',
       category: '',
       card: '',
@@ -359,8 +356,7 @@ export function CardExpenseUpsertSheet({
               form={form}
               name="amount"
               label="Valor da despesa"
-              placeholder="Digite o valor da despesa"
-              type="number"
+              placeholder="Ponto/virgula somente para separar centavos"
             />
 
             <GenericTransactionFormField
@@ -513,7 +509,7 @@ export function TransferUpsertSheet({
               form={form}
               name="amount"
               label="Valor da transferência"
-              placeholder="Digite o valor da transferência"
+              placeholder="Ponto/virgula somente para separar centavos"
               type="number"
             />
 
