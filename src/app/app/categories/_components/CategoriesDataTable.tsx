@@ -140,14 +140,14 @@ export function CategoriesDataTable({ data }: CardsDataTableProps) {
                   Copiar ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <SheetTrigger asChild>
+                  <DropdownMenuItem>Editar</DropdownMenuItem>
+                </SheetTrigger>
                 <DropdownMenuItem
                   onClick={() => handleDeleteCategory(category)}
                 >
                   Excluir
                 </DropdownMenuItem>
-                <SheetTrigger asChild>
-                  <DropdownMenuItem>Editar</DropdownMenuItem>
-                </SheetTrigger>
               </DropdownMenuContent>
             </DropdownMenu>
             <EditCategory category={category} />

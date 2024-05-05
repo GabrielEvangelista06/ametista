@@ -163,14 +163,14 @@ export function BankAccountsDataTable({ data }: BankAccountsDataTableProps) {
                   Copiar ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <SheetTrigger asChild>
+                  <DropdownMenuItem>Editar</DropdownMenuItem>
+                </SheetTrigger>
                 <DropdownMenuItem
                   onClick={() => handleDeleteBankInfo(bankInfo)}
                 >
                   Excluir
                 </DropdownMenuItem>
-                <SheetTrigger asChild>
-                  <DropdownMenuItem>Editar</DropdownMenuItem>
-                </SheetTrigger>
               </DropdownMenuContent>
             </DropdownMenu>
             <EditBankAccountSheet bankInfo={bankInfo} />

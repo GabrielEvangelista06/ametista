@@ -214,14 +214,14 @@ export function CardsDataTable({ data, dataBankInfos }: CardsDataTableProps) {
                   Copiar ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
+                <SheetTrigger asChild>
+                  <DropdownMenuItem>Editar</DropdownMenuItem>
+                </SheetTrigger>
                 <DropdownMenuItem
                   onClick={() => handleDeleteBankInfo(transaction)}
                 >
                   Excluir
                 </DropdownMenuItem>
-                <SheetTrigger asChild>
-                  <DropdownMenuItem>Editar</DropdownMenuItem>
-                </SheetTrigger>
               </DropdownMenuContent>
             </DropdownMenu>
             <EditCardSheet card={transaction} dataBankInfos={dataBankInfos} />
