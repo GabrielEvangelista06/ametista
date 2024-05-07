@@ -146,7 +146,7 @@ export function EditBankAccountSheet({
           />
 
           <SheetFooter className="mt-auto">
-            <Button type="submit">Adicionar</Button>
+            <Button type="submit">Salvar Edição</Button>
           </SheetFooter>
         </form>
       </Form>

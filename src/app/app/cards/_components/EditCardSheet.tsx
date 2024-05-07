@@ -82,7 +82,7 @@ export function EditCardSheet({ dataBankInfos, card }: EditCardProps) {
       <Form {...form}>
         <form onSubmit={onSubmit} className="space-y-4">
           <SheetHeader>
-            <SheetTitle>Criar Cartão</SheetTitle>
+            <SheetTitle>Editar Cartão</SheetTitle>
           </SheetHeader>
 
           <FormField
@@ -188,7 +188,7 @@ export function EditCardSheet({ dataBankInfos, card }: EditCardProps) {
           />
 
           <SheetFooter className="mt-auto">
-            <Button type="submit">Adicionar</Button>
+            <Button type="submit">Salvar Edição</Button>
           </SheetFooter>
         </form>
       </Form>

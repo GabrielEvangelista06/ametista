@@ -346,6 +346,7 @@ export async function upsertExpenseTransaction(input: InputDefault) {
 
       if (bankInfo && bankInfoNew) {
         bankInfo.currentBalance += transaction.amount
+        bankInfoNew.currentBalance -= amount
 
         await db.bankInfo.update({
           where: { id: transaction.bankInfoId! },
