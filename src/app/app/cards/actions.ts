@@ -41,7 +41,7 @@ export async function getUserCards() {
         }
       }
 
-      return { ...card, bankInfoId: bankInfoName }
+      return { ...card, bankInfoName }
     }),
   )
 
@@ -119,22 +119,18 @@ export async function upsertCard(input: z.infer<typeof cardSchema>) {
   const currentMonth = new Date().getMonth() + 1
   const currentYear = new Date().getFullYear()
 
-  const pastMonthInvoice = await createBills(
-    currentMonth - 1,
-    currentYear,
-    card,
-  )
-  const currentMonthInvoice = await createBills(currentMonth, currentYear, card)
-  const nextMonthInvoice = await createBills(
-    currentMonth + 1,
-    currentYear,
-    card,
-  )
+  const currentMonthInvoice = await createBills(currentMonth, currentYear, {
+    ...card,
+    bankInfoName: '',
+  })
+  const nextMonthInvoice = await createBills(currentMonth + 1, currentYear, {
+    ...card,
+    bankInfoName: '',
+  })
 
   return {
     data: {
       card,
-      pastMonthInvoice,
       currentMonthInvoice,
       nextMonthInvoice,
     },

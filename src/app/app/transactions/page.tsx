@@ -42,7 +42,11 @@ export default async function TransactionsPage() {
         </PageLayoutHeaderNav>
       </PageLayoutHeader>
       <PageLayoutMain>
-        <TransactionsDataTable data={transactions} />
+        <TransactionsDataTable
+          data={transactions}
+          dataBankInfos={bankInfos}
+          dataCards={cards}
+        />
       </PageLayoutMain>
     </PageLayout>
   )

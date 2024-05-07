@@ -52,8 +52,7 @@ export function BankAccountUpsertSheet({
     resolver: zodResolver(bankInfoSchema),
     defaultValues: {
       name: '',
-      type: '',
-      currentBalance: 0,
+      type: BankInfoType.CHECKING_ACCOUNT,
     },
   })
 
@@ -98,7 +97,7 @@ export function BankAccountUpsertSheet({
                   <FormLabel>Saldo atual</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Saldo atual da conta"
+                      placeholder="Ponto/virgula somente para separar centavos"
                       type="number"
                       {...field}
                     />

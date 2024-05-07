@@ -53,10 +53,7 @@ export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
     resolver: zodResolver(cardSchema),
     defaultValues: {
       description: '',
-      limit: 0,
       flag: '',
-      closingDay: 0,
-      dueDay: 0,
       bankInfo: '',
     },
   })
@@ -118,7 +115,10 @@ export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
                 <FormItem>
                   <FormLabel>Limite</FormLabel>
                   <FormControl>
-                    <Input placeholder="Limite do cartão" {...field} />
+                    <Input
+                      placeholder="Ponto/virgula somente para separar centavos"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -130,7 +130,7 @@ export function CardUpsertSheet({ children, dataBankInfos }: CardSheetProps) {
               name="flag"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Tipo</FormLabel>
+                  <FormLabel>Bandeira</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}

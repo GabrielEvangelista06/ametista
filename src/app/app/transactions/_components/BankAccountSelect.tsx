@@ -31,62 +31,65 @@ export function BankAccountSelect({
     <FormField
       control={form.control}
       name={name}
-      render={({ field }) => (
-        <FormItem className="flex flex-col">
-          <FormLabel>{label}</FormLabel>
-          <Popover>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  role="combobox"
-                  className={cn(
-                    'col-span-3 justify-between',
-                    !field.value && 'text-muted-foreground',
-                  )}
-                >
-                  {field.value
-                    ? data.find((bankAccount) => bankAccount.id === field.value)
-                        ?.name
-                    : 'Selecione a conta'}
-                  <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-0">
-              <Command>
-                <CommandInput
-                  placeholder="Procure uma conta..."
-                  className="h-9"
-                />
-                <CommandEmpty>Nenhuma conta encontrada.</CommandEmpty>
-                <CommandGroup>
-                  {data.map((bankAccount) => (
-                    <CommandItem
-                      value={bankAccount.name}
-                      key={bankAccount.id}
-                      onSelect={() => {
-                        form.setValue(name, bankAccount.id)
-                      }}
-                    >
-                      {bankAccount.name}
-                      <CheckIcon
-                        className={cn(
-                          'ml-auto h-4 w-4',
-                          bankAccount.id === field.value
-                            ? 'opacity-100'
-                            : 'opacity-0',
-                        )}
-                      />
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </Command>
-            </PopoverContent>
-          </Popover>
-          <FormMessage />
-        </FormItem>
-      )}
+      render={({ field }) => {
+        return (
+          <FormItem className="flex flex-col">
+            <FormLabel>{label}</FormLabel>
+            <Popover>
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    className={cn(
+                      'col-span-3 justify-between',
+                      !field.value && 'text-muted-foreground',
+                    )}
+                  >
+                    {field.value
+                      ? data.find(
+                          (bankAccount) => bankAccount.id === field.value,
+                        )?.name
+                      : 'Selecione a conta'}
+                    <CaretSortIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent className="w-[200px] p-0">
+                <Command>
+                  <CommandInput
+                    placeholder="Procure uma conta..."
+                    className="h-9"
+                  />
+                  <CommandEmpty>Nenhuma conta encontrada.</CommandEmpty>
+                  <CommandGroup>
+                    {data.map((bankAccount) => (
+                      <CommandItem
+                        value={bankAccount.name}
+                        key={bankAccount.id}
+                        onSelect={() => {
+                          form.setValue(name, bankAccount.id)
+                        }}
+                      >
+                        {bankAccount.name || 'Nenhuma conta encontrada.'}
+                        <CheckIcon
+                          className={cn(
+                            'ml-auto h-4 w-4',
+                            bankAccount.id === field.value
+                              ? 'opacity-100'
+                              : 'opacity-0',
+                          )}
+                        />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </Command>
+              </PopoverContent>
+            </Popover>
+            <FormMessage />
+          </FormItem>
+        )
+      }}
     />
   )
 }

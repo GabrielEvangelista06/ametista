@@ -29,6 +29,8 @@ export type Bill = ReturnTypeWithoutPromise<typeof getUserBillsByCardId>[0]
 
 export type TransactionsDataTableProps = {
   data: Transaction[]
+  dataBankInfos: BankInfo[]
+  dataCards?: Card[]
 }
 
 export type TransactionUpsertSheetProps = {
