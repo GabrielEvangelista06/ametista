@@ -7,9 +7,14 @@ import { Status } from '@/enums/Status'
 import { StatusBill } from '@/enums/StatusBill'
 import { TransactionTypes } from '@/enums/TransactionTypes'
 import { authConfig } from '@/lib/auth'
+import logger from '@/lib/logger'
 import { db } from '@/lib/prisma'
 import { deleteSchema } from '@/validators/deleteSchema'
+import { expenseSchema } from '@/validators/expenseSchema'
 import { updateTransactionStatusSchema } from '@/validators/updateTransctionStatus'
+import { Prisma } from '@prisma/client'
+import { addDays, isAfter } from 'date-fns'
+import cron from 'node-cron'
 import { z } from 'zod'
 
 import {
@@ -168,13 +173,16 @@ export async function upsertIncomeTransaction(input: InputDefault) {
     bankAccount,
     date,
     isFixed,
+    repeat,
+    numberRepetitions,
+    repetitionPeriod,
   } = input
 
   if (id) {
     const transaction = await db.transaction.findUnique({
       where: {
         id,
-        userId: session?.user?.id,
+        userId: session.user.id,
       },
     })
 
@@ -218,7 +226,7 @@ export async function upsertIncomeTransaction(input: InputDefault) {
     const updatedTransaction = await db.transaction.update({
       where: {
         id,
-        userId: session?.user?.id,
+        userId: session.user.id,
       },
       data: {
         amount,
@@ -228,6 +236,9 @@ export async function upsertIncomeTransaction(input: InputDefault) {
         bankInfoId: bankAccount,
         date,
         isFixed,
+        repeat,
+        numberRepetitions,
+        repetitionPeriod,
       },
     })
 
@@ -263,6 +274,9 @@ export async function upsertIncomeTransaction(input: InputDefault) {
       date,
       isFixed,
       userId: session.user.id,
+      repeat,
+      numberRepetitions,
+      repetitionPeriod,
     },
   })
 
@@ -287,7 +301,9 @@ export async function upsertIncomeTransaction(input: InputDefault) {
   }
 }
 
-export async function upsertExpenseTransaction(input: InputDefault) {
+export async function upsertExpenseTransaction(
+  input: z.infer<typeof expenseSchema>,
+) {
   const session = await getServerSession(authConfig)
 
   if (!session?.user?.id) {
@@ -308,6 +324,9 @@ export async function upsertExpenseTransaction(input: InputDefault) {
     bankAccount,
     date,
     isFixed,
+    repeat,
+    numberRepetitions,
+    repetitionPeriod,
   } = input
 
   if (id) {
@@ -368,6 +387,9 @@ export async function upsertExpenseTransaction(input: InputDefault) {
         bankInfoId: bankAccount,
         date,
         isFixed,
+        repeat,
+        numberRepetitions,
+        repetitionPeriod,
       },
     })
 
@@ -402,6 +424,9 @@ export async function upsertExpenseTransaction(input: InputDefault) {
       bankInfoId: bankAccount,
       date,
       isFixed,
+      repeat,
+      numberRepetitions,
+      repetitionPeriod,
       userId: session.user.id,
     },
   })
@@ -538,7 +563,18 @@ export async function upsertTransferTransaction(input: InputTransfer) {
     }
   }
 
-  const { id, amount, description, accountId, destinationAccount, date } = input
+  const {
+    id,
+    amount,
+    description,
+    accountId,
+    destinationAccount,
+    date,
+    isFixed,
+    repeat,
+    numberRepetitions,
+    repetitionPeriod,
+  } = input
 
   const bankInfoSource = await db.bankInfo.findUnique({
     where: { id: accountId, userId: session?.user?.id },
@@ -613,6 +649,10 @@ export async function upsertTransferTransaction(input: InputTransfer) {
         bankInfoId: accountId,
         destinationBankInfoId: destinationAccount,
         date,
+        isFixed,
+        repeat,
+        numberRepetitions,
+        repetitionPeriod,
       },
     })
 
@@ -632,6 +672,10 @@ export async function upsertTransferTransaction(input: InputTransfer) {
       bankInfoId: accountId,
       destinationBankInfoId: destinationAccount,
       date,
+      isFixed,
+      repeat,
+      numberRepetitions,
+      repetitionPeriod,
       userId: session.user.id,
     },
   })
@@ -707,6 +751,21 @@ export async function deleteTransaction(input: z.infer<typeof deleteSchema>) {
           await db.bill.update({
             where: { id: bill.id },
             data: { amount: bill.amount },
+          })
+        }
+      }
+
+      if (transaction.type === TransactionTypes.TRANSFER) {
+        const destinationBankInfo = await db.bankInfo.findUnique({
+          where: { id: transaction.destinationBankInfoId! },
+        })
+
+        if (destinationBankInfo) {
+          destinationBankInfo.currentBalance -= transaction.amount
+
+          await db.bankInfo.update({
+            where: { id: transaction.destinationBankInfoId! },
+            data: { currentBalance: destinationBankInfo.currentBalance },
           })
         }
       }
@@ -832,3 +891,154 @@ export async function updateTransactionStatus(
     error: false,
   }
 }
+
+async function createFixedTransactions() {
+  try {
+    logger.info(
+      'Iniciando processo de criação de transações de receitas fixas para todos os usuários.',
+    )
+
+    const users = await db.user.findMany()
+
+    for (const user of users) {
+      const fixedTransactions = await db.transaction.findMany({
+        where: {
+          userId: user.id,
+          isFixed: true,
+        },
+      })
+
+      const transactionCount = fixedTransactions.length
+      if (transactionCount > 0) {
+        logger.info(`Encontradas ${transactionCount} transações fixas...`)
+      } else {
+        logger.info('Nenhuma transação fixa encontrada.')
+      }
+
+      logger.info(
+        `Encontradas ${fixedTransactions.length} transações fixas para o usuário ID ${user.id}.`,
+      )
+
+      const transactionData = fixedTransactions.map((transaction) => ({
+        type: transaction.type,
+        amount: transaction.amount,
+        status: transaction.status,
+        description: transaction.description,
+        categoryId: transaction.categoryId,
+        bankInfoId: transaction.bankInfoId,
+        date: new Date(),
+        isFixed: true,
+        userId: user.id,
+      }))
+
+      await db.transaction.createMany({
+        data: transactionData,
+      })
+
+      if (transactionCount > 0) {
+        logger.info(
+          'Transações de receita fixa criadas com sucesso para os usuários',
+        )
+      }
+    }
+
+    logger.info('Processo de criação de transações de receita fixa concluído.')
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      logger.error('Erro de solicitação conhecido do Prisma:', error)
+    } else if (error instanceof Prisma.PrismaClientValidationError) {
+      logger.error('Erro de validação do Prisma:', error)
+    } else {
+      logger.error(
+        'Erro ao executar upsert de transações de receita fixa:',
+        error,
+      )
+    }
+    throw error
+  }
+}
+
+const repetitionPeriodsInDays = {
+  DAILY: 1,
+  WEEKLY: 7,
+  MONTHLY: 30,
+  YEARLY: 365,
+}
+
+async function getTransactionsToRepeat() {
+  logger.info('Iniciando processo de transações para repetir...')
+
+  try {
+    const transactionsWithRepeat = await db.transaction.findMany({
+      where: { repeat: true },
+    })
+
+    const transactionsForRepeat = transactionsWithRepeat.filter(
+      (transaction) => {
+        if (
+          transaction.timesRepeated !== null &&
+          transaction.numberRepetitions !== null &&
+          transaction.repetitionPeriod !== null &&
+          transaction.repetitionPeriod in repetitionPeriodsInDays
+        ) {
+          const currentDate = new Date()
+          const lastTransactionDate = new Date(transaction.date)
+          const nextRepeatDate = addDays(
+            lastTransactionDate,
+            repetitionPeriodsInDays[
+              transaction.repetitionPeriod as keyof typeof repetitionPeriodsInDays
+            ],
+          )
+
+          return (
+            transaction.timesRepeated < transaction.numberRepetitions &&
+            isAfter(currentDate, nextRepeatDate)
+          )
+        }
+        return false
+      },
+    )
+
+    logger.info(
+      `Quantidade de transações para repetir: ${transactionsForRepeat.length}`,
+    )
+
+    const transactionsToCreate = transactionsForRepeat.map((transaction) => ({
+      type: transaction.type,
+      amount: transaction.amount,
+      status: Status.PENDING,
+      description: transaction.description,
+      date: new Date(),
+      userId: transaction.userId,
+      bankInfoId: transaction.bankInfoId,
+      billId: transaction.billId,
+      cardId: transaction.cardId,
+      installmentCount: transaction.installmentCount,
+      isFixed: transaction.isFixed,
+      isInstallment: transaction.isInstallment,
+      repeat: transaction.repeat,
+      destinationBankInfoId: transaction.destinationBankInfoId,
+      categoryId: transaction.categoryId,
+      numberRepetitions: transaction.numberRepetitions,
+      repetitionPeriod: transaction.repetitionPeriod,
+      timesRepeated:
+        transaction.timesRepeated == null ? 1 : transaction.timesRepeated + 1,
+    }))
+
+    await db.transaction.createMany({ data: transactionsToCreate })
+
+    logger.info('Finalizando processo de transações para repetir.')
+  } catch (error) {
+    logger.error('Erro ao processar transações para repetir:', error)
+  }
+}
+
+// Configura o agendador para executar a função getTransactionsToRepeat a cada dia às 00:00
+cron.schedule('0 0 * * *', async () => {
+  await getTransactionsToRepeat()
+})
+
+// Configura o agendador para executar a função createFixedTransactions a cada mês no dia 1 às 00:00
+cron.schedule('0 0 1 * *', async () => {
+  await createFixedTransactions()
+})
