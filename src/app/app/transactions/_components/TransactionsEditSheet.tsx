@@ -13,6 +13,12 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
@@ -50,6 +56,7 @@ import { BooleanSwitchField } from './BooleanSwitchField'
 import { CategorySelect } from './CategorySelect'
 import { DateSelect } from './DateSelect'
 import { GenericTransactionFormField } from './GenericTransactionFormField'
+import { PopoverMoreDetails } from './PopoverMoreDetails'
 import {
   Bill,
   InputCardExpense,
@@ -70,12 +77,15 @@ export function EditIncomeTransaction({
     defaultValues: {
       id: defaultValue?.id,
       amount: defaultValue?.amount,
+      isPaid: defaultValue?.status === Status.COMPLETED,
       description: defaultValue?.description,
       category: defaultValue?.categoryId || '',
       bankAccount: defaultValue?.bankInfoId || '',
+      isFixed: defaultValue?.isFixed,
       date: defaultValue?.date || new Date(),
-      isFixed: false,
-      isPaid: defaultValue?.status === Status.COMPLETED,
+      repeat: defaultValue?.repeat,
+      numberRepetitions: defaultValue?.numberRepetitions || 0,
+      repetitionPeriod: defaultValue?.repetitionPeriod || '',
     },
   })
 
@@ -146,6 +156,68 @@ export function EditIncomeTransaction({
 
           <DateSelect form={form} />
 
+          <PopoverMoreDetails>
+            <div className="flex flex-col gap-4">
+              <BooleanSwitchField
+                form={form}
+                label="Receita fixa"
+                name="isFixed"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <Popover>
+                <PopoverTrigger>
+                  <BooleanSwitchField
+                    form={form}
+                    label="Repetir"
+                    name="repeat"
+                  />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <FormField
+                    control={form.control}
+                    name="numberRepetitions"
+                    render={({ field }) => (
+                      <FormItem className="ap-1 flex items-center justify-evenly space-y-0.5 rounded-lg border p-3 shadow-sm">
+                        <FormLabel className="w-32">Quantidade</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="repetitionPeriod"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-evenly space-y-0.5 rounded-lg border p-3 shadow-sm">
+                        <FormLabel className="w-32">Período</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o perí" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="MONTHLY">Mensal</SelectItem>
+                            <SelectItem value="DAILY">Diário</SelectItem>
+                            <SelectItem value="WEEKLY">Semanal</SelectItem>
+                            <SelectItem value="YEARLY">Anual</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </PopoverMoreDetails>
+
           <SheetFooter className="mt-auto">
             <Button type="submit">Salvar Edição</Button>
           </SheetFooter>
@@ -167,11 +239,15 @@ export function EditExpenseSheet({
     defaultValues: {
       id: defaultValue?.id,
       amount: defaultValue?.amount,
+      isPaid: defaultValue?.status === Status.COMPLETED,
       description: defaultValue?.description,
       category: defaultValue?.categoryId || '',
       bankAccount: defaultValue?.bankInfoId || '',
       date: defaultValue?.date || new Date(),
-      isPaid: defaultValue?.status === Status.COMPLETED,
+      isFixed: defaultValue?.isFixed,
+      repeat: defaultValue?.repeat,
+      numberRepetitions: defaultValue?.numberRepetitions || 0,
+      repetitionPeriod: defaultValue?.repetitionPeriod || '',
     },
   })
 
@@ -241,6 +317,67 @@ export function EditExpenseSheet({
           />
 
           <DateSelect form={form} />
+
+          <PopoverMoreDetails>
+            <div className="flex flex-col gap-4">
+              <BooleanSwitchField
+                form={form}
+                label="Receita fixa"
+                name="isFixed"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <Popover>
+                <PopoverTrigger>
+                  <BooleanSwitchField
+                    form={form}
+                    label="Repetir"
+                    name="repeat"
+                  />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <FormField
+                    control={form.control}
+                    name="numberRepetitions"
+                    render={({ field }) => (
+                      <FormItem className="ap-1 flex items-center justify-evenly space-y-0.5 rounded-lg border p-3 shadow-sm">
+                        <FormLabel className="mr-1 w-32">Quantidade</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="repetitionPeriod"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-evenly space-y-0.5 rounded-lg border p-3 shadow-sm">
+                        <FormLabel className="w-32">Período</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o perí" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="MONTHLY">Mensal</SelectItem>
+                            <SelectItem value="DAILY">Diário</SelectItem>
+                            <SelectItem value="WEEKLY">Semanal</SelectItem>
+                            <SelectItem value="YEARLY">Anual</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </PopoverMoreDetails>
 
           <SheetFooter className="mt-auto">
             <Button type="submit">Salvar Edição</Button>
@@ -442,6 +579,9 @@ export function EditTransferSheet({
       accountId: defaultValue?.bankInfoId || '',
       destinationAccount: defaultValue?.destinationBankInfoId || '',
       date: defaultValue?.date,
+      repeat: defaultValue?.repeat,
+      numberRepetitions: defaultValue?.numberRepetitions || 0,
+      repetitionPeriod: defaultValue?.repetitionPeriod || '',
     },
   })
 
@@ -509,6 +649,67 @@ export function EditTransferSheet({
           />
 
           <DateSelect form={form} />
+
+          <PopoverMoreDetails>
+            <div className="flex flex-col gap-4">
+              <BooleanSwitchField
+                form={form}
+                label="Receita fixa"
+                name="isFixed"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <Popover>
+                <PopoverTrigger>
+                  <BooleanSwitchField
+                    form={form}
+                    label="Repetir"
+                    name="repeat"
+                  />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <FormField
+                    control={form.control}
+                    name="numberRepetitions"
+                    render={({ field }) => (
+                      <FormItem className="ap-1 flex items-center justify-evenly space-y-0.5 rounded-lg border p-3 shadow-sm">
+                        <FormLabel className="mr-1 w-32">Quantidade</FormLabel>
+                        <FormControl>
+                          <Input {...field} />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="repetitionPeriod"
+                    render={({ field }) => (
+                      <FormItem className="flex items-center justify-evenly space-y-0.5 rounded-lg border p-3 shadow-sm">
+                        <FormLabel className="w-32">Período</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o perí" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="MONTHLY">Mensal</SelectItem>
+                            <SelectItem value="DAILY">Diário</SelectItem>
+                            <SelectItem value="WEEKLY">Semanal</SelectItem>
+                            <SelectItem value="YEARLY">Anual</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </PopoverMoreDetails>
 
           <SheetFooter className="mt-auto">
             <Button type="submit">Salvar Edição</Button>
