@@ -71,9 +71,12 @@ model Transaction {
   destinationBankInfoId String?
   isFixed               Boolean  @default(false)
   isInstallment         Boolean  @default(false)
-  repeat                Boolean  @default(false)
   installmentCount      Int?
   categoryId            String?
+  repeat                Boolean  @default(false)
+  numberRepetitions     Int?
+  repetitionPeriod      String?
+  timesRepeated         Int?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
