@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -583,8 +584,43 @@ export function CardExpenseUpsertSheet({
 
             <DateSelect form={form} />
 
+            <PopoverMoreDetails>
+              <div className="flex flex-col gap-4">
+                <Popover>
+                  <PopoverTrigger>
+                    <BooleanSwitchField
+                      form={form}
+                      label="Parcelado"
+                      name="isInstallment"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent>
+                    <FormField
+                      control={form.control}
+                      name="numberRepetitions"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-col items-center justify-evenly gap-2 space-y-0.5 rounded-lg border p-3 shadow-sm">
+                          <FormLabel>Número de vezes:</FormLabel>
+                          <FormControl>
+                            <Input {...field} className="w-2/5" />
+                          </FormControl>
+                          {form.getValues('numberRepetitions') > 0 && (
+                            <FormDescription>
+                              {`${form.getValues('numberRepetitions')}x de R$ ${(form.getValues('amount') / form.getValues('numberRepetitions')).toFixed(2)}`}
+                            </FormDescription>
+                          )}
+                        </FormItem>
+                      )}
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </PopoverMoreDetails>
+
             <SheetFooter className="mt-auto">
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? 'Adicionando...' : 'Adicionar'}
+              </Button>
             </SheetFooter>
           </form>
         </Form>

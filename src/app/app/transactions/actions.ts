@@ -13,10 +13,11 @@ import { deleteSchema } from '@/validators/deleteSchema'
 import { expenseSchema } from '@/validators/expenseSchema'
 import { updateTransactionStatusSchema } from '@/validators/updateTransctionStatus'
 import { Prisma } from '@prisma/client'
-import { addDays, isAfter } from 'date-fns'
+import { addDays, addMonths, isAfter } from 'date-fns'
 import cron from 'node-cron'
 import { z } from 'zod'
 
+import { createBills } from '../cards/actions'
 import {
   Category,
   InputCardExpense,
@@ -464,9 +465,28 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
     }
   }
 
-  const { id, amount, description, category, date, bill, card } = input
+  const {
+    id,
+    amount,
+    description,
+    category,
+    date,
+    bill,
+    card,
+    isInstallment,
+    numberRepetitions,
+  } = input
 
   const bankInfoId = await getBankInfoByCardId(card ?? '')
+
+  if (!bankInfoId) {
+    return {
+      data: null,
+      title: 'Erro ao criar despesa de cartão',
+      message: 'Conta não encontrada',
+      error: true,
+    }
+  }
 
   if (id) {
     const transaction = await db.transaction.findUnique({
@@ -513,6 +533,66 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
     }
   }
 
+  if (isInstallment && numberRepetitions > 1) {
+    const installmentAmount = amount / numberRepetitions
+
+    for (let i = 0; i < numberRepetitions; i++) {
+      const installmentDate = addMonths(new Date(date), i)
+      const month = installmentDate.getMonth() + 1
+      const year = installmentDate.getFullYear()
+
+      const cardForInstallment = await db.card.findUnique({
+        where: { id: card, userId: session.user.id },
+      })
+
+      let billForInstallment = await db.bill.findFirst({
+        where: {
+          cardId: card,
+          dueDate: new Date(year, month - 1, cardForInstallment?.dueDay ?? 1),
+        },
+      })
+
+      if (!billForInstallment) {
+        billForInstallment = await createBills(month, year, {
+          ...cardForInstallment!,
+          bankInfoName: '',
+        })
+      }
+
+      billForInstallment.amount += installmentAmount
+
+      await db.bill.update({
+        where: { id: billForInstallment.id },
+        data: { amount: billForInstallment.amount },
+      })
+
+      await db.transaction.create({
+        data: {
+          type: TransactionTypes.CARD_EXPENSE,
+          amount: installmentAmount,
+          status: Status.PENDING,
+          description,
+          date: installmentDate,
+          categoryId: category,
+          userId: session.user.id,
+          bankInfoId: bankInfoId?.bankInfoId,
+          cardId: card,
+          billId: billForInstallment.id,
+          isInstallment,
+          numberRepetitions,
+          installmentCount: i + 1,
+        },
+      })
+    }
+
+    return {
+      data: null,
+      title: 'Despesa de cartão criada',
+      message: 'Despesa de cartão parcelada criada com sucesso',
+      error: false,
+    }
+  }
+
   const transaction = await db.transaction.create({
     data: {
       type: TransactionTypes.CARD_EXPENSE,
@@ -527,21 +607,6 @@ export async function upsertCardExpenseTransaction(input: InputCardExpense) {
       billId: bill,
     },
   })
-
-  if (transaction) {
-    const bill = await db.bill.findUnique({
-      where: { id: transaction.billId ?? undefined },
-    })
-
-    if (bill) {
-      bill.amount += amount
-
-      await db.bill.update({
-        where: { id: bill.id },
-        data: { amount: bill.amount },
-      })
-    }
-  }
 
   return {
     data: transaction,
@@ -740,21 +805,6 @@ export async function deleteTransaction(input: z.infer<typeof deleteSchema>) {
         bankInfo.currentBalance += transaction.amount
       }
 
-      if (transaction.type === TransactionTypes.CARD_EXPENSE) {
-        const bill = await db.bill.findUnique({
-          where: { id: transaction.billId! },
-        })
-
-        if (bill) {
-          bill.amount -= transaction.amount
-
-          await db.bill.update({
-            where: { id: bill.id },
-            data: { amount: bill.amount },
-          })
-        }
-      }
-
       if (transaction.type === TransactionTypes.TRANSFER) {
         const destinationBankInfo = await db.bankInfo.findUnique({
           where: { id: transaction.destinationBankInfoId! },
@@ -773,6 +823,21 @@ export async function deleteTransaction(input: z.infer<typeof deleteSchema>) {
       await db.bankInfo.update({
         where: { id: transaction.bankInfoId! },
         data: { currentBalance: bankInfo.currentBalance },
+      })
+    }
+  }
+
+  if (transaction.type === TransactionTypes.CARD_EXPENSE) {
+    const bill = await db.bill.findUnique({
+      where: { id: transaction.billId! },
+    })
+
+    if (bill) {
+      bill.amount -= transaction.amount
+
+      await db.bill.update({
+        where: { id: bill.id },
+        data: { amount: bill.amount },
       })
     }
   }

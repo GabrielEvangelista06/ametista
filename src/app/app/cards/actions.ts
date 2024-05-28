@@ -140,7 +140,7 @@ export async function upsertCard(input: z.infer<typeof cardSchema>) {
   }
 }
 
-const createBills = async (month: number, year: number, card: Card) => {
+export const createBills = async (month: number, year: number, card: Card) => {
   const monthName = format(new Date(year, month - 1), 'MMM', {
     locale: pt,
   })

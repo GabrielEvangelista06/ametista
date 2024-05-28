@@ -25,6 +25,9 @@ export async function getUserBillsByCardIds() {
         in: cards.map((card) => card.id),
       },
     },
+    orderBy: {
+      dueDate: 'asc',
+    },
   })
 
   return bills.map((bill) => {
