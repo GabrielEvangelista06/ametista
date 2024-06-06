@@ -18,7 +18,7 @@ export function DashboardCharts() {
   const getTotalForMonth = async (
     transactionType: TransactionTypes[],
     monthsAgo: number,
-  ) => {
+  ): Promise<number> => {
     const now = new Date()
     const startOfMonth = new Date(
       now.getFullYear(),
@@ -38,37 +38,43 @@ export function DashboardCharts() {
     )
 
     if (response.error) {
-      return toast({
+      toast({
         title: response.title,
         description: response.message,
         variant: 'destructive',
       })
+      return 0
     }
 
     return response.data ?? 0
   }
 
   useEffect(() => {
-    const fetchTotal = async (
-      transactionType: TransactionTypes[],
-      setter: React.Dispatch<React.SetStateAction<number[]>>,
-    ) => {
-      const totals: number[] = []
-      for (let i = 0; i < 5; i++) {
-        const total = await getTotalForMonth(transactionType, i)
-        if (typeof total === 'number') {
-          totals.push(total)
-        }
+    const fetchTotals = async () => {
+      try {
+        const incomePromises = Array.from({ length: 5 }, (_, i) =>
+          getTotalForMonth([TransactionTypes.INCOME], i),
+        )
+        const expensePromises = Array.from({ length: 5 }, (_, i) =>
+          getTotalForMonth([TransactionTypes.EXPENSE], i),
+        )
+
+        const [incomeResults, expenseResults] = await Promise.all([
+          Promise.all(incomePromises),
+          Promise.all(expensePromises),
+        ])
+
+        setTotalIncome(incomeResults)
+        setTotalExpense(expenseResults)
+      } catch (error) {
+        console.error('Falha ao carregar totais:', error)
       }
-      setter(totals)
     }
 
-    fetchTotal([TransactionTypes.INCOME], setTotalIncome)
-    fetchTotal([TransactionTypes.EXPENSE], setTotalExpense)
-
+    fetchTotals()
     setTimeout(() => {
       setIsLoading(false)
-    }, 2500)
+    }, 1500)
   }, [])
 
   const chartdata = totalIncome.map((income, index) => {
