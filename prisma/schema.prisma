@@ -91,6 +91,16 @@ model Transaction {
 
   Bill   Bill?   @relation(fields: [billId], references: [id], onDelete: Cascade)
   billId String?
+
+  @@index([userId], name: "IDX_Transaction_userId")
+  @@index([type], name: "IDX_Transaction_type")
+  @@index([date], name: "IDX_Transaction_date")
+  @@index([userId, type], name: "IDX_Transaction_userId_type")
+  @@index([userId, date], name: "IDX_Transaction_userId_date")
+  @@index([userId, categoryId], name: "IDX_Transaction_userId_categoryId")
+  @@index([userId, bankInfoId], name: "IDX_Transaction_userId_bankInfoId")
+  @@index([userId, cardId], name: "IDX_Transaction_userId_cardId")
+  @@index([userId, billId], name: "IDX_Transaction_userId_billId")
 }
 
 model BankInfo {
@@ -105,6 +115,8 @@ model BankInfo {
   user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
   cards        Card[]
+
+  @@index([userId], name: "IDX_BankInfo_userId")
 }
 
 model Card {
@@ -123,6 +135,9 @@ model Card {
   userId       String
   bills        Bill[]
   transactions Transaction[]
+
+  @@index([userId], name: "IDX_Card_userId")
+  @@index([bankInfoId], name: "IDX_Card_bankInfoId")
 }
 
 model Bill {
@@ -137,6 +152,8 @@ model Bill {
   card         Card          @relation(fields: [cardId], references: [id], onDelete: Cascade)
   cardId       String
   transactions Transaction[]
+
+  @@index([cardId], name: "IDX_Bill_cardId")
 }
 
 model Category {
@@ -149,4 +166,6 @@ model Category {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
+
+  @@index([userId], name: "IDX_Category_userId")
 }
