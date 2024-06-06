@@ -25,10 +25,11 @@ export const incomeSchema = z.object({
   isFixed: z.boolean().optional().default(false),
   repeat: z.boolean().optional().default(false),
   numberRepetitions: z
-    .string()
-    .transform((v) => Number(v) || 0)
+    .union([z.string(), z.number()])
+    .transform((v) => (typeof v === 'string' ? Number(v) : v))
     .refine((value) => value > 0, {
       message: 'Quantidade de repetições deve ser um número positivo',
-    }),
+    })
+    .optional(),
   repetitionPeriod: z.string().optional(),
 })

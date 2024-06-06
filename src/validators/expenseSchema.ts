@@ -29,6 +29,7 @@ export const expenseSchema = z.object({
     .transform((v) => (typeof v === 'string' ? Number(v) : v))
     .refine((value) => value > 0, {
       message: 'Quantidade de repetições deve ser um número positivo',
-    }),
+    })
+    .optional(),
   repetitionPeriod: z.string().optional(),
 })

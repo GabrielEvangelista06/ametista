@@ -24,12 +24,13 @@ export const cardExpenseSchema = z.object({
     message: 'O fatura é obrigatória',
   }),
   date: z.date().default(new Date()),
+  isFixed: z.boolean().optional().default(false),
   isInstallment: z.boolean().optional().default(false),
   numberRepetitions: z
-    .string()
-    .transform((v) => Number(v) || 0)
+    .union([z.string(), z.number()])
+    .transform((v) => (typeof v === 'string' ? Number(v) : v))
     .refine((value) => value > 0, {
       message: 'Quantidade de repetições deve ser um número positivo',
-    }),
-  isFixed: z.boolean().optional().default(false),
+    })
+    .optional(),
 })
