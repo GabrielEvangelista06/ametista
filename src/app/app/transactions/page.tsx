@@ -8,15 +8,13 @@ import {
 import { Button } from '@/components/ui/button'
 import { PlusIcon } from 'lucide-react'
 
+import { getUserBankInfos } from '../bank-accounts/actions'
+import { getUserCards } from '../cards/actions'
+import { getUserCategories } from '../categories/actions'
 import { PopoverSelectTransactionType } from './_components/PopoverSelectTransactionType'
 import { TransactionsDataTable } from './_components/TransactionsDataTable'
 import { BankInfo, Card, Category, Transaction } from './_components/types'
-import {
-  getUserBankInfos,
-  getUserCards,
-  getUserCategories,
-  getUserTransactions,
-} from './actions'
+import { getUserTransactions } from './actions'
 
 export default async function TransactionsPage() {
   const transactions: Transaction[] = await getUserTransactions()
