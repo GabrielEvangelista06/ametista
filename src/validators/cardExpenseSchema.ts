@@ -20,7 +20,6 @@ export const cardExpenseSchema = z.object({
   bill: z.string({ required_error: 'O fatura é obrigatória' }).min(1, {
     message: 'O fatura é obrigatória',
   }),
-  isInstallment: z.boolean().optional().default(false),
+  date: z.date().default(new Date()),
   isFixed: z.boolean().optional().default(false),
-  date: z.date().optional(),
 })
