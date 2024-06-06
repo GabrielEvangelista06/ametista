@@ -8,7 +8,7 @@ import { authConfig } from '@/lib/auth'
 import { db } from '@/lib/prisma'
 
 import { getUserBankInfos } from '../bank-accounts/actions'
-import { getUserTransactions } from '../transactions/actions'
+import { getUserCategories } from '../categories/actions'
 
 export async function getTransactionsForTheSelectedPeriod(
   userId: string,
@@ -47,31 +47,26 @@ export async function getTotalForTheSelectedPeriod(
       }
     }
 
-    const transactions = await getTransactionsForTheSelectedPeriod(
-      session.user.id,
-      type,
-      startOfPeriod,
-      endOfPeriod,
-    )
-
-    if (!transactions) {
-      return {
-        data: null,
-        title: 'Sem dados',
-        message: 'Não foram encontradas transações',
-        error: false,
-      }
-    }
-
-    const total = transactions.reduce(
-      (sum, transaction) => sum + transaction.amount,
-      0,
-    )
+    const total = await db.transaction.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        userId: session.user.id,
+        type: {
+          in: type,
+        },
+        date: {
+          gte: startOfPeriod,
+          lte: endOfPeriod,
+        },
+      },
+    })
 
     return {
-      data: total,
+      data: total._sum.amount || 0,
       title: 'Dados carregados',
-      message: 'Transações do mês atual carregadas com sucesso!',
+      message: 'Total carregado com sucesso!',
       error: false,
     }
   } catch (error) {
@@ -109,7 +104,10 @@ export async function getBalance() {
   }
 }
 
-export async function getThreeLastTransactions() {
+export async function getThreeLastTransactions(
+  startOfPeriod: Date,
+  endOfPeriod: Date,
+) {
   try {
     const session = await getServerSession(authConfig)
 
@@ -122,9 +120,29 @@ export async function getThreeLastTransactions() {
       }
     }
 
-    const transactions = await getUserTransactions()
+    const transactions = await db.transaction.findMany({
+      where: {
+        userId: session.user.id,
+        type: {
+          in: [
+            TransactionTypes.INCOME,
+            TransactionTypes.EXPENSE,
+            TransactionTypes.CARD_EXPENSE,
+            TransactionTypes.TRANSFER,
+          ],
+        },
+        date: {
+          gte: startOfPeriod,
+          lte: endOfPeriod,
+        },
+      },
+      orderBy: {
+        date: 'desc',
+      },
+      take: 3,
+    })
 
-    if (!transactions) {
+    if (!transactions || transactions.length === 0) {
       return {
         data: null,
         title: 'Sem dados',
@@ -133,13 +151,25 @@ export async function getThreeLastTransactions() {
       }
     }
 
-    const sortedTransactions = transactions.sort(
-      (a, b) => Number(new Date(b.date)) - Number(new Date(a.date)),
-    )
-    const lastThreeTransactions = sortedTransactions.slice(0, 3)
+    const categories = await getUserCategories()
+
+    const enrichedTransactions = transactions.map((transaction) => {
+      const categoryName =
+        defaultCategories.find(
+          (category) => category.id === transaction?.categoryId,
+        )?.name ??
+        categories.find((category) => category.id === transaction?.categoryId)
+          ?.name ??
+        ''
+
+      return {
+        ...transaction,
+        category: categoryName,
+      }
+    })
 
     return {
-      data: lastThreeTransactions,
+      data: enrichedTransactions,
       title: 'Dados carregados',
       message: 'Últimas transações carregadas com sucesso!',
       error: false,
@@ -227,14 +257,24 @@ export async function getPercentageOfExpensesByCategory(
       }
     }
 
-    const transactions = await getTransactionsForTheSelectedPeriod(
-      session.user.id,
-      [TransactionTypes.EXPENSE, TransactionTypes.CARD_EXPENSE],
-      startOfPeriod,
-      endOfPeriod,
-    )
+    const expensesByCategory = await db.transaction.groupBy({
+      by: ['categoryId'],
+      _sum: {
+        amount: true,
+      },
+      where: {
+        userId: session.user.id,
+        type: {
+          in: [TransactionTypes.EXPENSE, TransactionTypes.CARD_EXPENSE],
+        },
+        date: {
+          gte: startOfPeriod,
+          lte: endOfPeriod,
+        },
+      },
+    })
 
-    if (!transactions) {
+    if (!expensesByCategory || expensesByCategory.length === 0) {
       return {
         data: [],
         title: 'Sem dados',
@@ -243,8 +283,8 @@ export async function getPercentageOfExpensesByCategory(
       }
     }
 
-    const totalExpense = transactions.reduce(
-      (sum, transaction) => sum + transaction.amount,
+    const totalExpense = expensesByCategory.reduce(
+      (sum, category) => sum + (category._sum?.amount || 0),
       0,
     )
 
@@ -257,46 +297,30 @@ export async function getPercentageOfExpensesByCategory(
       }
     }
 
-    const getCategoryPercentage = async (transaction: {
-      categoryId: string
-      amount: number
-    }) => {
-      let category = 'Sem categoria'
+    const userCategories = await getUserCategories()
 
-      if (transaction.categoryId) {
-        const foundCategory = defaultCategories.find(
-          (defaultCategory) => defaultCategory.id === transaction.categoryId,
-        )
+    const categoryPercentages = expensesByCategory.map((expense) => {
+      let categoryName = 'Sem categoria'
+
+      if (expense.categoryId) {
+        const foundCategory =
+          defaultCategories.find(
+            (defaultCategory) => defaultCategory.id === expense.categoryId,
+          ) ||
+          userCategories.find(
+            (userCategory) => userCategory.id === expense.categoryId,
+          )
 
         if (foundCategory) {
-          category = foundCategory.name
-        } else {
-          const dbCategory = await db.category.findUnique({
-            where: {
-              id: transaction.categoryId,
-              userId: session.user.id,
-            },
-          })
-          if (dbCategory) {
-            category = dbCategory.name
-          }
+          categoryName = foundCategory.name
         }
       }
 
       return {
-        category,
-        percentage: (transaction.amount / totalExpense) * 100,
+        category: categoryName,
+        percentage: ((expense._sum?.amount || 0) / totalExpense) * 100,
       }
-    }
-
-    const categoryPercentages = await Promise.all(
-      transactions.map((transaction) =>
-        getCategoryPercentage({
-          categoryId: transaction.categoryId || '',
-          amount: transaction.amount,
-        }),
-      ),
-    )
+    })
 
     return {
       data: categoryPercentages,
