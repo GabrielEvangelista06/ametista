@@ -65,6 +65,7 @@ const customSortFn = (
 export function TransactionsDataTable({
   data,
   dataBankInfos,
+  dataCards,
 }: TransactionsDataTableProps) {
   const router = useRouter()
 
@@ -323,6 +324,7 @@ export function TransactionsDataTable({
               <EditCardExpenseSheet
                 defaultValue={transaction}
                 dataBankInfos={dataBankInfos}
+                dataCards={dataCards}
               />
             )}
             {transaction.type === 'Transferência' && (

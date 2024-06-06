@@ -228,7 +228,7 @@ export function IncomeUpsertSheet({
 
             <SheetFooter className="mt-auto">
               <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting ? 'Transferindo...' : 'Transferir'}
+                {form.formState.isSubmitting ? 'Adicionando...' : 'Adicionar'}
               </Button>
             </SheetFooter>
           </form>
@@ -399,7 +399,9 @@ export function ExpenseUpsertSheet({
             </PopoverMoreDetails>
 
             <SheetFooter className="mt-auto">
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? 'Adicionando...' : 'Adicionar'}
+              </Button>
             </SheetFooter>
           </form>
         </Form>
@@ -604,9 +606,9 @@ export function CardExpenseUpsertSheet({
                           <FormControl>
                             <Input {...field} className="w-2/5" />
                           </FormControl>
-                          {form.getValues('numberRepetitions') > 0 && (
+                          {(form.getValues('numberRepetitions') ?? 0) > 0 && (
                             <FormDescription>
-                              {`${form.getValues('numberRepetitions')}x de R$ ${(form.getValues('amount') / form.getValues('numberRepetitions')).toFixed(2)}`}
+                              {`${form.getValues('numberRepetitions') ?? 0}x de R$ ${(form.getValues('amount') / (form.getValues('numberRepetitions') ?? 0)).toFixed(2)}`}
                             </FormDescription>
                           )}
                         </FormItem>
@@ -784,7 +786,9 @@ export function TransferUpsertSheet({
             </PopoverMoreDetails>
 
             <SheetFooter className="mt-auto">
-              <Button type="submit">Adicionar</Button>
+              <Button type="submit" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? 'Adicionando...' : 'Adicionar'}
+              </Button>
             </SheetFooter>
           </form>
         </Form>

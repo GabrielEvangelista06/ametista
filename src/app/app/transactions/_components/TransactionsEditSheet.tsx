@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -219,7 +220,9 @@ export function EditIncomeTransaction({
           </PopoverMoreDetails>
 
           <SheetFooter className="mt-auto">
-            <Button type="submit">Salvar Edição</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? 'Salvando...' : 'Salvar Edição'}
+            </Button>
           </SheetFooter>
         </form>
       </Form>
@@ -380,7 +383,9 @@ export function EditExpenseSheet({
           </PopoverMoreDetails>
 
           <SheetFooter className="mt-auto">
-            <Button type="submit">Salvar Edição</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? 'Salvando...' : 'Salvar Edição'}
+            </Button>
           </SheetFooter>
         </form>
       </Form>
@@ -403,6 +408,8 @@ export function EditCardExpenseSheet({
       card: defaultValue?.cardId || '',
       bill: defaultValue?.billId || '',
       date: defaultValue?.date || new Date(),
+      isInstallment: defaultValue?.isInstallment ?? false,
+      numberRepetitions: defaultValue?.numberRepetitions ?? 0,
     },
   })
 
@@ -557,8 +564,43 @@ export function EditCardExpenseSheet({
 
           <DateSelect form={form} />
 
+          <PopoverMoreDetails>
+            <div className="flex flex-col gap-4">
+              <Popover>
+                <PopoverTrigger>
+                  <BooleanSwitchField
+                    form={form}
+                    label="Parcelado"
+                    name="isInstallment"
+                  />
+                </PopoverTrigger>
+                <PopoverContent>
+                  <FormField
+                    control={form.control}
+                    name="numberRepetitions"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col items-center justify-evenly gap-2 space-y-0.5 rounded-lg border p-3 shadow-sm">
+                        <FormLabel>Número de vezes:</FormLabel>
+                        <FormControl>
+                          <Input {...field} className="w-2/5" />
+                        </FormControl>
+                        {(form.getValues('numberRepetitions') ?? 0) > 0 && (
+                          <FormDescription>
+                            {`${form.getValues('numberRepetitions') ?? 0}x de R$ ${(form.getValues('amount') / (form.getValues('numberRepetitions') ?? 0)).toFixed(2)}`}
+                          </FormDescription>
+                        )}
+                      </FormItem>
+                    )}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </PopoverMoreDetails>
+
           <SheetFooter className="mt-auto">
-            <Button type="submit">Salvar Edição</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? 'Salvando...' : 'Salvar Edição'}
+            </Button>
           </SheetFooter>
         </form>
       </Form>
@@ -712,7 +754,9 @@ export function EditTransferSheet({
           </PopoverMoreDetails>
 
           <SheetFooter className="mt-auto">
-            <Button type="submit">Salvar Edição</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? 'Salvando...' : 'Salvar Edição'}
+            </Button>
           </SheetFooter>
         </form>
       </Form>
