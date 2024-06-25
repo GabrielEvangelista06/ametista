@@ -9,7 +9,7 @@ import {
 
 export function DashboardCardSkeleton() {
   return (
-    <DashboardCard className="bg-primary-foreground">
+    <DashboardCard className="w-[360px] bg-primary-foreground md:w-auto">
       <DashboardCardHeader>
         <DashboardCardHeaderTitle>
           <Skeleton className="h-4 w-12" />
@@ -17,7 +17,7 @@ export function DashboardCardSkeleton() {
         <Skeleton className="h-6 w-6" />
       </DashboardCardHeader>
       <DashboardCardContent>
-        <Skeleton className="h-8 w-36" />
+        <Skeleton className="h-6 w-36 lg:h-8 lg:w-32 xl:h-8" />
       </DashboardCardContent>
     </DashboardCard>
   )

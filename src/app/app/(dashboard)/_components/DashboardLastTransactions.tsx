@@ -86,7 +86,8 @@ export function DashboardLastTransactions() {
                     {format(transaction.date, 'PPP', {
                       locale: pt,
                     })}
-                    {''} - {transaction.category}
+                    <span className="hidden xl:inline"> -</span>{' '}
+                    {transaction.category}
                   </p>
                 </div>
                 <div
@@ -98,13 +99,6 @@ export function DashboardLastTransactions() {
                         : 'text-red-500'
                   }`}
                 >
-                  {transaction.type === 'Receita' ? (
-                    <span>+ </span>
-                  ) : transaction.type === 'Transferência' ? (
-                    <span></span>
-                  ) : (
-                    <span>- </span>
-                  )}
                   {transaction.amount.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',

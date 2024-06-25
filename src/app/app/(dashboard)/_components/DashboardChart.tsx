@@ -103,12 +103,12 @@ export function DashboardCharts() {
             </CardTitle>
           </CardHeader>
           <div className="flex h-full flex-col items-center justify-center">
-            <div className="ml-[19rem] mt-3 flex gap-2">
+            <div className="ml-[6.5rem] mt-3 flex gap-2 md:ml-[31rem] lg:ml-36 xl:ml-[19rem]">
               <Skeleton className="h-4 w-20" />
               <Skeleton className="h-4 w-20" />
             </div>
             <div className="mt-4">
-              <Skeleton className="h-72 w-[31rem]" />
+              <Skeleton className="h-[17.3rem] w-80 md:ml-2 md:h-[16.5rem] md:w-[42rem] lg:ml-0 lg:w-80 xl:h-72 xl:w-[31rem]" />
             </div>
           </div>
         </>

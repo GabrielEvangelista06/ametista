@@ -15,7 +15,7 @@ export function PageLayout({ children, className }: PageLayoutGenericProps) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={cn(['h-screen w-screen lg:w-auto', className])}
+      className={cn(['h-screen w-screen lg:w-auto xl:min-h-screen', className])}
     >
       <motion.div
         initial={{ opacity: 0 }}
@@ -66,5 +66,7 @@ export function PageLayoutMain({
   children,
   className,
 }: PageLayoutGenericProps) {
-  return <main className={cn(['lg:p-2', className])}>{children}</main>
+  return (
+    <main className={cn(['mx-2 lg:mx-0 lg:p-2', className])}>{children}</main>
+  )
 }

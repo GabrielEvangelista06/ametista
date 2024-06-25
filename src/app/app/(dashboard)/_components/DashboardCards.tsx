@@ -145,7 +145,7 @@ export function DashboardCards() {
               <WalletIcon />
             </DashboardCardHeader>
             <DashboardCardContent>
-              <div className="text-2xl font-bold">{balance}</div>
+              <div>{balance}</div>
             </DashboardCardContent>
           </DashboardCard>
 
@@ -155,7 +155,7 @@ export function DashboardCards() {
               <HandCoinsIcon />
             </DashboardCardHeader>
             <DashboardCardContent>
-              <div className="text-2xl font-bold">{totalIncome}</div>
+              <div>{totalIncome}</div>
             </DashboardCardContent>
           </DashboardCard>
 
@@ -165,7 +165,7 @@ export function DashboardCards() {
               <TrendingDownIcon />
             </DashboardCardHeader>
             <DashboardCardContent>
-              <div className="text-2xl font-bold">{totalExpense}</div>
+              <div>{totalExpense}</div>
             </DashboardCardContent>
           </DashboardCard>
 
@@ -175,7 +175,7 @@ export function DashboardCards() {
               <PiggyBankIcon />
             </DashboardCardHeader>
             <DashboardCardContent>
-              <div className="text-2xl font-bold">{savings}</div>
+              <div>{savings}</div>
             </DashboardCardContent>
           </DashboardCard>
         </>

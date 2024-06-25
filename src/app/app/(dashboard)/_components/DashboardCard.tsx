@@ -9,7 +9,7 @@ type DashboardCardProps<T = any> = {
 
 export function DashboardCard({ className, children }: DashboardCardProps) {
   return (
-    <Card className={cn(['transition-all hover:scale-105'], className)}>
+    <Card className={cn(['md:transition-all md:hover:scale-105'], className)}>
       {children}
     </Card>
   )
@@ -46,5 +46,11 @@ export function DashboardCardContent({
   children,
   className,
 }: DashboardCardProps) {
-  return <CardContent className={cn(['', className])}>{children}</CardContent>
+  return (
+    <CardContent
+      className={cn(['font-bold lg:text-xl xl:text-2xl', className])}
+    >
+      {children}
+    </CardContent>
+  )
 }
