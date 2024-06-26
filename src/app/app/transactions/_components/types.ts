@@ -7,13 +7,10 @@ import { incomeSchema } from '@/validators/incomeSchema'
 import { transferSchema } from '@/validators/transferSchema'
 import { z } from 'zod'
 
-import {
-  getUserBankInfos,
-  getUserBillsByCardId,
-  getUserCards,
-  getUserCategories,
-  getUserTransactions,
-} from '../actions'
+import { getUserBankInfos } from '../../bank-accounts/actions'
+import { getUserCards } from '../../cards/actions'
+import { getUserCategories } from '../../categories/actions'
+import { getUserBillsByCardId, getUserTransactions } from '../actions'
 
 export type Transaction = ReturnTypeWithoutPromise<
   typeof getUserTransactions

@@ -281,7 +281,6 @@ export function CardExpenseUpsertSheet({
       category: '',
       card: '',
       bill: '',
-      isInstallment: false,
       isFixed: false,
       date: new Date(),
     },

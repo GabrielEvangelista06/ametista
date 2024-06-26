@@ -21,13 +21,5 @@ export const transferSchema = z.object({
     .string({ required_error: 'A conta de destino é obrigatória' })
     .min(1, { message: 'A conta de destino é obrigatória' }),
   date: z.date().optional(),
-  repeat: z.boolean().optional().default(false),
   isFixed: z.boolean().optional().default(false),
-  numberRepetitions: z
-    .union([z.string(), z.number()])
-    .transform((v) => (typeof v === 'string' ? Number(v) : v))
-    .refine((value) => value > 0, {
-      message: 'Quantidade de repetições deve ser um número positivo',
-    }),
-  repetitionPeriod: z.string().optional(),
 })
