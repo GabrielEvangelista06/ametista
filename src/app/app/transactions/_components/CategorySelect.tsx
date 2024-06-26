@@ -26,7 +26,7 @@ export function CategorySelect({ form, categories }: CategorySelectProps) {
           <FormLabel>Categoria</FormLabel>
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
-              <SelectTrigger className="w-[280px]">
+              <SelectTrigger>
                 <SelectValue placeholder="Selecione a categoria" />
               </SelectTrigger>
             </FormControl>
