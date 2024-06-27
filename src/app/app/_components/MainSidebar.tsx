@@ -37,6 +37,7 @@ type MainSidebarProps = {
 
 export function MainSidebar({ user }: MainSidebarProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
+  const [windowWidth, setWindowWidth] = useState(0)
   const pathname = usePathname()
 
   const toggleSidebar = () => {
@@ -47,10 +48,13 @@ export function MainSidebar({ user }: MainSidebarProps) {
 
   useEffect(() => {
     const handleResize = () => {
+      setWindowWidth(window.innerWidth)
       if (window.innerWidth >= 1024) {
         setIsSidebarOpen(false)
       }
     }
+
+    setWindowWidth(window.innerWidth)
 
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
@@ -71,7 +75,7 @@ export function MainSidebar({ user }: MainSidebarProps) {
         {isSidebarOpen ? <Cross2Icon /> : <HamburgerMenuIcon />}
       </Button>
       <AnimatePresence>
-        {(isSidebarOpen || window.innerWidth >= 1024) && (
+        {(isSidebarOpen || windowWidth >= 1024) && (
           <motion.div
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}

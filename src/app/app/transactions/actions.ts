@@ -657,24 +657,41 @@ export async function deleteTransaction(input: z.infer<typeof deleteSchema>) {
         bankInfo.currentBalance += transaction.amount
       }
 
-      if (transaction.type === TransactionTypes.CARD_EXPENSE) {
-        const bill = await db.bill.findUnique({
-          where: { id: transaction.billId! },
+      if (transaction.type === TransactionTypes.TRANSFER) {
+        const destinationBankInfo = await db.bankInfo.findUnique({
+          where: { id: transaction.destinationBankInfoId! },
         })
 
-        if (bill) {
-          bill.amount -= transaction.amount
+        if (destinationBankInfo) {
+          destinationBankInfo.currentBalance -= transaction.amount
 
-          await db.bill.update({
-            where: { id: bill.id },
-            data: { amount: bill.amount },
+          await db.bankInfo.update({
+            where: { id: transaction.destinationBankInfoId! },
+            data: { currentBalance: destinationBankInfo.currentBalance },
           })
+
+          bankInfo.currentBalance += transaction.amount
         }
       }
 
       await db.bankInfo.update({
         where: { id: transaction.bankInfoId! },
         data: { currentBalance: bankInfo.currentBalance },
+      })
+    }
+  }
+
+  if (transaction.type === TransactionTypes.CARD_EXPENSE) {
+    const bill = await db.bill.findUnique({
+      where: { id: transaction.billId! },
+    })
+
+    if (bill) {
+      bill.amount -= transaction.amount
+
+      await db.bill.update({
+        where: { id: bill.id },
+        data: { amount: bill.amount },
       })
     }
   }
