@@ -17,7 +17,11 @@ export function DashboardLastTransactions() {
   const [isLoading, setIsLoading] = useState(true)
 
   const getLastTransactions = async () => {
-    const response = await getThreeLastTransactions()
+    const now = new Date()
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
+
+    const response = await getThreeLastTransactions(startOfMonth, endOfMonth)
 
     if (response.error) {
       return toast({
@@ -35,7 +39,7 @@ export function DashboardLastTransactions() {
 
     setTimeout(() => {
       setIsLoading(false)
-    }, 2500)
+    }, 1500)
   }, [])
 
   return (
@@ -55,7 +59,18 @@ export function DashboardLastTransactions() {
         </>
       )}
 
-      {!isLoading && (
+      {!transactions && (
+        <div>
+          <CardHeader className="-ml-5">
+            <CardTitle>Últimas Transações</CardTitle>
+          </CardHeader>
+          <div className="flex h-32 items-center justify-center text-muted-foreground">
+            Nenhuma transação encontrada
+          </div>
+        </div>
+      )}
+
+      {!isLoading && transactions && (
         <>
           <CardHeader className="-ml-5">
             <CardTitle>Últimas Transações</CardTitle>
@@ -71,7 +86,8 @@ export function DashboardLastTransactions() {
                     {format(transaction.date, 'PPP', {
                       locale: pt,
                     })}
-                    {''} - {transaction.category}
+                    <span className="hidden xl:inline"> -</span>{' '}
+                    {transaction.category}
                   </p>
                 </div>
                 <div
@@ -83,13 +99,6 @@ export function DashboardLastTransactions() {
                         : 'text-red-500'
                   }`}
                 >
-                  {transaction.type === 'Receita' ? (
-                    <span>+ </span>
-                  ) : transaction.type === 'Transferência' ? (
-                    <span></span>
-                  ) : (
-                    <span>- </span>
-                  )}
                   {transaction.amount.toLocaleString('pt-BR', {
                     style: 'currency',
                     currency: 'BRL',
@@ -99,12 +108,6 @@ export function DashboardLastTransactions() {
             ))}
           </div>
         </>
-      )}
-
-      {!isLoading && transactions.length === 0 && (
-        <div className="flex h-32 items-center justify-center text-muted-foreground">
-          Nenhuma transação encontrada
-        </div>
       )}
     </div>
   )

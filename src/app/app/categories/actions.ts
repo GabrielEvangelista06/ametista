@@ -15,6 +15,12 @@ export async function getUserCategories() {
     where: {
       userId: session?.user?.id,
     },
+    select: {
+      id: true,
+      name: true,
+      value: true,
+      categoryType: true,
+    },
   })
 }
 

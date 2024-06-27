@@ -53,8 +53,7 @@ export function DashboardCards() {
     }
 
     const formattedData = response.data ? formatCurrency(response.data) : 'R$ 0'
-
-    return setter(formattedData)
+    setter(formattedData)
   }
 
   const getTotalBalance = async () => {
@@ -68,15 +67,11 @@ export function DashboardCards() {
       })
     }
 
-    let formattedSavings = 'R$ 0'
-    if (response.data) {
-      formattedSavings =
-        response.data < 0
-          ? `- ${formatCurrency(Math.abs(response.data))}`
-          : formatCurrency(response.data)
-    }
-
-    return setBalance(formattedSavings)
+    const formattedBalance =
+      response.data !== null && response.data < 0
+        ? `- ${formatCurrency(Math.abs(response.data))}`
+        : formatCurrency(response.data ?? 0)
+    setBalance(formattedBalance)
   }
 
   const getSavings = async () => {
@@ -94,15 +89,11 @@ export function DashboardCards() {
       })
     }
 
-    let formattedSavings = 'R$ 0'
-    if (response.data) {
-      formattedSavings =
-        response.data < 0
-          ? `- ${formatCurrency(Math.abs(response.data))}`
-          : formatCurrency(response.data)
-    }
-
-    return setSavings(formattedSavings)
+    const formattedSavings =
+      response.data < 0
+        ? `- ${formatCurrency(Math.abs(response.data))}`
+        : formatCurrency(response.data)
+    setSavings(formattedSavings)
   }
 
   useEffect(() => {
@@ -110,24 +101,29 @@ export function DashboardCards() {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1)
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0)
 
-    fetchData(
-      [TransactionTypes.INCOME],
-      startOfMonth,
-      endOfMonth,
-      setTotalIncome,
-    )
-    fetchData(
-      [TransactionTypes.EXPENSE, TransactionTypes.CARD_EXPENSE],
-      startOfMonth,
-      endOfMonth,
-      setTotalExpense,
-    )
-    getTotalBalance()
-    getSavings()
+    const fetchAllData = async () => {
+      await Promise.all([
+        fetchData(
+          [TransactionTypes.INCOME],
+          startOfMonth,
+          endOfMonth,
+          setTotalIncome,
+        ),
+        fetchData(
+          [TransactionTypes.EXPENSE, TransactionTypes.CARD_EXPENSE],
+          startOfMonth,
+          endOfMonth,
+          setTotalExpense,
+        ),
+        getTotalBalance(),
+        getSavings(),
+      ])
+    }
 
+    fetchAllData()
     setTimeout(() => {
       setIsLoading(false)
-    }, 2500)
+    }, 1500)
   }, [])
 
   return (
@@ -149,7 +145,7 @@ export function DashboardCards() {
               <WalletIcon />
             </DashboardCardHeader>
             <DashboardCardContent>
-              <div className="text-2xl font-bold">{balance}</div>
+              <div>{balance}</div>
             </DashboardCardContent>
           </DashboardCard>
 
@@ -159,7 +155,7 @@ export function DashboardCards() {
               <HandCoinsIcon />
             </DashboardCardHeader>
             <DashboardCardContent>
-              <div className="text-2xl font-bold">{totalIncome}</div>
+              <div>{totalIncome}</div>
             </DashboardCardContent>
           </DashboardCard>
 
@@ -169,7 +165,7 @@ export function DashboardCards() {
               <TrendingDownIcon />
             </DashboardCardHeader>
             <DashboardCardContent>
-              <div className="text-2xl font-bold">{totalExpense}</div>
+              <div>{totalExpense}</div>
             </DashboardCardContent>
           </DashboardCard>
 
@@ -179,7 +175,7 @@ export function DashboardCards() {
               <PiggyBankIcon />
             </DashboardCardHeader>
             <DashboardCardContent>
-              <div className="text-2xl font-bold">{savings}</div>
+              <div>{savings}</div>
             </DashboardCardContent>
           </DashboardCard>
         </>

@@ -12,6 +12,7 @@ import { deleteSchema } from '@/validators/deleteSchema'
 import { updateTransactionStatusSchema } from '@/validators/updateTransctionStatus'
 import { z } from 'zod'
 
+import { getUserCategories } from '../categories/actions'
 import {
   Category,
   InputCardExpense,
@@ -70,52 +71,12 @@ export async function getUserTransactions() {
   return enrichedTransactions
 }
 
-export async function getUserBankInfos() {
-  const session = await getServerSession(authConfig)
-
-  const bankInfos = await db.bankInfo.findMany({
-    where: { userId: session?.user?.id },
-    select: {
-      id: true,
-      name: true,
-    },
-    orderBy: { createdAt: 'desc' },
-  })
-
-  return bankInfos
-}
-
-export async function getUserCategories() {
-  const session = await getServerSession(authConfig)
-
-  const categories = await db.category.findMany({
-    where: { userId: session?.user?.id },
-    select: {
-      id: true,
-      name: true,
-      value: true,
-      categoryType: true,
-    },
-    orderBy: { createdAt: 'desc' },
-  })
-
-  return categories
-}
-
-export async function getUserCards() {
-  const session = await getServerSession(authConfig)
-
-  return await db.card.findMany({
-    where: { userId: session?.user?.id },
-    orderBy: { createdAt: 'desc' },
-  })
-}
-
 export async function getUserBillsByCardId(cardId: string | undefined) {
   if (!cardId) return []
 
   const bills = await db.bill.findMany({
     where: { cardId, status: StatusBill.OPEN },
+    orderBy: { dueDate: 'asc' },
   })
 
   return bills

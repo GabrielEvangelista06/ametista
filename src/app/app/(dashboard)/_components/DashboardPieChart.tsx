@@ -37,7 +37,7 @@ export function DashboardDonutChart() {
 
     setTimeout(() => {
       setIsLoading(false)
-    }, 2500)
+    }, 1500)
   }, [])
 
   return (

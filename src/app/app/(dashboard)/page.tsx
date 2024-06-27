@@ -20,20 +20,20 @@ export default function AppPage() {
       </PageLayoutHeader>
       <PageLayoutMain>
         <Tabs defaultValue="overview">
-          <TabsList>
+          <TabsList className="ml-2 mt-2 lg:ml-0 lg:mt-0">
             <TabsTrigger value="overview">Visão Geral</TabsTrigger>
           </TabsList>
-          <TabsContent value="overview" className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <TabsContent value="overview" className="mx-2 space-y-4 md:mx-0">
+            <div className="grid gap-4 md:mx-2 md:grid-cols-2 lg:grid-cols-4">
               <DashboardCards />
             </div>
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-              <Card className="col-span-4">
+            <div className="grid gap-4 md:mx-2 md:grid-cols-2 lg:grid-cols-7">
+              <Card className="col-span-4 w-[22.5rem] md:w-auto">
                 <CardContent>
                   <DashboardCharts />
                 </CardContent>
               </Card>
-              <div className="col-span-3 space-y-3">
+              <div className="col-span-4 space-y-3 lg:col-span-3">
                 <Card>
                   <CardContent>
                     <DashboardLastTransactions />

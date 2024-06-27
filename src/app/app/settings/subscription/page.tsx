@@ -32,7 +32,7 @@ export default function SubscriptionPage() {
       </CardContent>
       <CardFooter className="flex items-center justify-between border-t border-border pt-6">
         <span>Para mais possibilidades assine o PRO</span>
-        <Button>Upgrade para o PRO</Button>
+        <Button>Seja PRO</Button>
       </CardFooter>
     </Card>
   )

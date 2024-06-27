@@ -23,7 +23,7 @@ export function BooleanSwitchField<T extends { control: any }>({
       render={({ field }) => (
         <FormItem
           className={cn(
-            'flex items-center justify-evenly space-y-0.5 rounded-lg border p-3 shadow-sm',
+            'flex items-center gap-2 space-y-0.5 rounded-lg border p-3 shadow-sm lg:justify-evenly lg:gap-0',
             className,
           )}
         >
