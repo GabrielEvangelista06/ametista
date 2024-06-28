@@ -60,6 +60,7 @@ export type BooleanSwitchFieldProps<T> = {
 
 export type DateSelectProps = {
   form: any
+  label?: string
 }
 
 export type CategorySelectProps = {

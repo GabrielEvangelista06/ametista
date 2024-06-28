@@ -1,10 +1,12 @@
 'use client'
 
+import { useState } from 'react'
+
 import { DataTableWithFilter } from '@/components/data-table/DataTable'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,6 +30,7 @@ import {
 
 import { Bill } from '../types'
 import { BillDetails } from './BillDetails'
+import { PayBill } from './DialogPayBill'
 
 type BillsDataTableProps = {
   data: Bill[]
@@ -55,6 +58,9 @@ const customSortFn = (rowA: Row<Bill>, rowB: Row<Bill>, columnId: string) => {
 }
 
 export function BillsDataTable({ data }: BillsDataTableProps) {
+  const [seeDetailsDialogOpen, setSeeDetailsDialogOpen] = useState(false)
+  const [payBillDialogOpen, setPayBillDialogOpen] = useState(false)
+
   const columns: ColumnDef<Bill>[] = [
     {
       id: 'select',
@@ -201,7 +207,14 @@ export function BillsDataTable({ data }: BillsDataTableProps) {
         const bill = row.original
 
         return (
-          <Dialog>
+          <Dialog
+            open={seeDetailsDialogOpen || payBillDialogOpen}
+            onOpenChange={
+              seeDetailsDialogOpen
+                ? setSeeDetailsDialogOpen
+                : setPayBillDialogOpen
+            }
+          >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 p-0">
@@ -217,12 +230,16 @@ export function BillsDataTable({ data }: BillsDataTableProps) {
                   Copiar ID
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DialogTrigger asChild>
-                  <DropdownMenuItem>Ver detalhes</DropdownMenuItem>
-                </DialogTrigger>
+                <DropdownMenuItem onClick={() => setSeeDetailsDialogOpen(true)}>
+                  Ver detalhes
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPayBillDialogOpen(true)}>
+                  Marcar como paga
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-            <BillDetails bill={bill} />
+            {seeDetailsDialogOpen && <BillDetails bill={bill} />}
+            {payBillDialogOpen && <PayBill bill={bill} />}
           </Dialog>
         )
       },
