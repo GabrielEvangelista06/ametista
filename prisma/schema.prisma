@@ -143,6 +143,7 @@ model Bill {
   amount      Float
   dueDate     DateTime
   status      String
+  paidAt      DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

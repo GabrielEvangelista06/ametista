@@ -25,14 +25,14 @@ import { CalendarIcon } from 'lucide-react'
 
 import { DateSelectProps } from './types'
 
-export function DateSelect({ form }: DateSelectProps) {
+export function DateSelect({ form, label = 'Data' }: DateSelectProps) {
   return (
     <FormField
       control={form.control}
       name="date"
       render={({ field }) => (
         <FormItem className="flex flex-col">
-          <FormLabel>Data</FormLabel>
+          <FormLabel>{label}</FormLabel>
           <Popover>
             <PopoverTrigger asChild>
               <Button
