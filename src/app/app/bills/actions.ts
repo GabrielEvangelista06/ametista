@@ -4,9 +4,14 @@ import { getServerSession } from 'next-auth'
 
 import { defaultCategories } from '@/constants/defaultCategories'
 import { Status } from '@/enums/Status'
+import { StatusBill } from '@/enums/StatusBill'
 import { authConfig } from '@/lib/auth'
+import { logger } from '@/lib/logger'
 import { db } from '@/lib/prisma'
 import { payBillSchema } from '@/validators/payBillSchema'
+import { format, isSameDay, setDate } from 'date-fns'
+import pt from 'date-fns/locale/pt'
+import cron from 'node-cron'
 import { z } from 'zod'
 
 export async function getUserBillsByCardIds() {
@@ -62,7 +67,7 @@ export async function getBillTransactions(billId: string) {
       if (transaction.categoryId) {
         const foundCategory = defaultCategories.find(
           (defaultCategory) => defaultCategory.id === transaction.categoryId,
-        )
+        ) as { id: string; name: string } | undefined
 
         if (foundCategory) {
           category = foundCategory.name
@@ -224,3 +229,116 @@ export async function markBillAsPaid(input: z.infer<typeof payBillSchema>) {
     error: false,
   }
 }
+
+type DateField = 'closingDate' | 'dueDate'
+
+async function updateBillStatus(
+  fromStatus: StatusBill,
+  toStatus: StatusBill,
+  dateField: DateField,
+) {
+  logger.info(
+    `Iniciando atualização de faturas de ${fromStatus} para ${toStatus}`,
+  )
+
+  try {
+    const today = new Date()
+    const bills = await db.bill.findMany({
+      where: { status: fromStatus },
+    })
+
+    for (const bill of bills) {
+      if (bill[dateField] < today) {
+        await db.bill.update({
+          where: { id: bill.id },
+          data: { status: toStatus },
+        })
+        logger.info(`Fatura ${bill.id} atualizada para ${toStatus}`)
+      }
+    }
+
+    logger.info(
+      `Atualização de faturas de ${fromStatus} para ${toStatus} concluída com sucesso`,
+    )
+  } catch (error) {
+    logger.error(
+      `Erro ao atualizar faturas de ${fromStatus} para ${toStatus}: ${error}`,
+    )
+  }
+}
+
+async function closeBills() {
+  await updateBillStatus(StatusBill.OPEN, StatusBill.CLOSED, 'closingDate')
+}
+
+async function lateBills() {
+  await updateBillStatus(StatusBill.CLOSED, StatusBill.LATE, 'dueDate')
+}
+
+interface Card {
+  id: string
+  closingDay: number
+  dueDay: number
+}
+
+const createNextBill = async (card: Card): Promise<void> => {
+  const today = new Date()
+  const nextClosingDate = setDate(today, card.closingDay)
+  const nextDueDate = setDate(nextClosingDate, card.dueDay)
+
+  const monthName = format(nextClosingDate, 'MMM', { locale: pt })
+  const year = nextClosingDate.getFullYear()
+
+  const existingBill = await db.bill.findFirst({
+    where: {
+      cardId: card.id,
+      closingDate: nextClosingDate,
+    },
+  })
+
+  if (!existingBill) {
+    const newBill = await db.bill.create({
+      data: {
+        description: `Fatura de ${monthName}/${year}`,
+        amount: 0,
+        closingDate: nextClosingDate,
+        dueDate: nextDueDate,
+        status: StatusBill.OPEN,
+        cardId: card.id,
+      },
+    })
+    logger.info(
+      `Nova fatura criada para o cartão ${card.id}: ${newBill.description}`,
+    )
+  }
+}
+
+const isCardClosingDay = (card: Card, date: Date): boolean =>
+  isSameDay(date, setDate(date, card.closingDay))
+
+const checkAndCreateNextBills = async (): Promise<void> => {
+  logger.info('Iniciando verificação para criação de novas faturas')
+  try {
+    const cards = await db.card.findMany()
+    const today = new Date()
+
+    const createBillPromises = cards
+      .filter((card) => isCardClosingDay(card, today))
+      .map((card) => createNextBill(card))
+
+    await Promise.all(createBillPromises)
+
+    logger.info('Verificação de novas faturas concluída')
+  } catch (error) {
+    logger.error('Erro ao verificar e criar novas faturas:', error)
+  }
+}
+
+// Configura o cron para rodar todos os dias à meia-noite
+cron.schedule('0 0 * * *', checkAndCreateNextBills)
+
+// Configura o cron para rodar todos os dias à meia-noite e dez
+cron.schedule('10 0 * * *', closeBills)
+
+// Configura o cron para rodar todos os dias à meia-noite e vinte
+cron.schedule('20 0 * * *', lateBills)
