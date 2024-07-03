@@ -37,3 +37,7 @@ next-env.d.ts
 
 /postgres-data
 /prisma/migrations
+
+#LOGS
+combined.log
+error.log
