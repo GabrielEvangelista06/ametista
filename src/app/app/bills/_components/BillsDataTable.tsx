@@ -163,6 +163,27 @@ export function BillsDataTable({ data }: BillsDataTableProps) {
       },
     },
     {
+      accessorKey: 'closingDate',
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="link"
+            onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
+          >
+            Data de fechamento
+            <CaretSortIcon className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => {
+        return (
+          <div className="font-medium">
+            {new Date(row.getValue('closingDate')).toLocaleDateString('pt-BR')}
+          </div>
+        )
+      },
+    },
+    {
       accessorKey: 'dueDate',
       header: ({ column }) => {
         return (

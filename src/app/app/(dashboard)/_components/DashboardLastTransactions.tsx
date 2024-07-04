@@ -92,9 +92,9 @@ export function DashboardLastTransactions() {
                 </div>
                 <div
                   className={`ml-auto font-medium ${
-                    transaction.type === 'Receita'
+                    transaction.type === 'INCOME'
                       ? 'text-green-500'
-                      : transaction.type === 'Transferência'
+                      : transaction.type === 'TRANSFER'
                         ? 'text-foreground'
                         : 'text-red-500'
                   }`}

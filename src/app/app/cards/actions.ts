@@ -149,6 +149,7 @@ const createBills = async (month: number, year: number, card: Card) => {
     data: {
       description: `Fatura de ${monthName}/${year}`,
       amount: 0,
+      closingDate: new Date(year, month - 1, card.closingDay),
       dueDate: new Date(year, month - 1, card.dueDay),
       status: StatusBill.OPEN,
       cardId: card.id,
