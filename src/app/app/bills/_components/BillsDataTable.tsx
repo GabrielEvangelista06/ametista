@@ -204,7 +204,6 @@ export function BillsDataTable({ data }: BillsDataTableProps) {
         )
       },
     },
-
     {
       accessorKey: 'cardId',
       header: ({ column }) => {
