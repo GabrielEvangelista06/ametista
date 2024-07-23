@@ -7,6 +7,7 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import { compare } from 'bcrypt'
 
 import { db } from './prisma'
+import { createStripeCustomer } from './stripe'
 
 export const authConfig: NextAuthOptions = {
   adapter: PrismaAdapter(db) as Adapter,
@@ -64,6 +65,7 @@ export const authConfig: NextAuthOptions = {
           id: `${existingUser.id}`,
           username: existingUser.username,
           email: existingUser.email,
+          stripeSubscriptionId: existingUser.stripeSubscriptionId,
         }
       },
     }),
@@ -75,6 +77,7 @@ export const authConfig: NextAuthOptions = {
           ...token,
           username: user.username,
           id: user.id,
+          stripeSubscriptionId: user.stripeSubscriptionId,
         }
       }
       return token
@@ -86,8 +89,17 @@ export const authConfig: NextAuthOptions = {
           ...session.user,
           username: token.username,
           id: token.sub,
+          stripeSubscriptionId: token.stripeSubscriptionId,
         },
       }
+    },
+  },
+  events: {
+    createUser: async (message) => {
+      await createStripeCustomer({
+        name: message.user.name as string,
+        email: message.user.email as string,
+      })
     },
   },
 }
