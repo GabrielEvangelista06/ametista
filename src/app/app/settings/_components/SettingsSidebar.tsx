@@ -35,7 +35,7 @@ export function SettingsSidebar() {
           <DashboardSidebarNavLink
             href="/app/settings/subscription"
             index={3}
-            active={isActive('/app/settigs/subscription')}
+            active={isActive('/app/settings/subscription')}
           >
             Assinatura
           </DashboardSidebarNavLink>

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 
 import { db } from '@/lib/prisma'
+import { createStripeCustomer } from '@/lib/stripe'
 import { registerSchema } from '@/validators/registerSchema'
 import { hash } from 'bcrypt'
 
@@ -44,6 +45,11 @@ export async function POST(req: Request) {
         email,
         password: hashedPassword,
       },
+    })
+
+    await createStripeCustomer({
+      name: username,
+      email,
     })
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

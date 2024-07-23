@@ -1,39 +1,55 @@
-import { Button } from '@/components/ui/button'
+import { getServerSession } from 'next-auth'
+
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
+import { authConfig } from '@/lib/auth'
+import { getUserCurrentPlan } from '@/lib/stripe'
 
-export default function SubscriptionPage() {
+import { CardFooterContent } from './_components/CardFooterContent'
+import { QuotaItem } from './_components/QuotaItem'
+import { createCheckoutSessionAction } from './actions'
+
+const quotas = [
+  { key: 'TRANSACTIONS', label: 'Transações' },
+  { key: 'BANK_INFOS', label: 'Contas' },
+  { key: 'CARDS', label: 'Cartões' },
+  { key: 'CATEGORIES', label: 'Categorias' },
+]
+
+export default async function SubscriptionPage() {
+  const session = await getServerSession(authConfig)
+  const plan = await getUserCurrentPlan(session?.user?.id as string)
+
   return (
-    <Card>
-      <CardHeader className="border-b border-border">
-        <CardTitle>Uso do plano</CardTitle>
-        <CardDescription>
-          Atualmente você está no plano gratuito. Ciclo atual de cobrança: 05
-          Abril - 04 Maio
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="pt-6">
-        <div className="space-y-2">
-          <header className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">1/5</span>
-            <span className="text-sm text-muted-foreground">20%</span>
-          </header>
-          <main>
-            <Progress value={20} />
-          </main>
-        </div>
-      </CardContent>
-      <CardFooter className="flex items-center justify-between border-t border-border pt-6">
-        <span>Para mais possibilidades assine o PRO</span>
-        <Button>Seja PRO</Button>
-      </CardFooter>
-    </Card>
+    <form action={createCheckoutSessionAction}>
+      <Card>
+        <CardHeader className="border-b border-border">
+          <CardTitle>Uso do plano</CardTitle>
+          <CardDescription>
+            Atualmente você está no plano{' '}
+            <span className="font-bold uppercase">Ametista {plan.name}</span>.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="pt-6">
+          {quotas.map((quota) => (
+            <QuotaItem
+              key={quota.key}
+              label={quota.label}
+              current={plan.quota[quota.key as keyof typeof plan.quota].current}
+              available={
+                plan.quota[quota.key as keyof typeof plan.quota].available
+              }
+              usage={plan.quota[quota.key as keyof typeof plan.quota].usage}
+            />
+          ))}
+        </CardContent>
+        <CardFooterContent planName={plan.name as string} />
+      </Card>
+    </form>
   )
 }
