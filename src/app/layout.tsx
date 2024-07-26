@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 
 import { Toaster } from '@/components/ui/toaster'
+import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 
 import NextAuthSessionProvider from '../../providers/NextAuthSessionProvider'
@@ -18,8 +19,12 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="pt-br" suppressHydrationWarning>
-      <body className={GeistSans.className}>
+    <html
+      lang="pt-br"
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <body className="overflow-x-hidden antialiased">
         <NextAuthSessionProvider>
           <ThemeProvider
             attribute="class"
