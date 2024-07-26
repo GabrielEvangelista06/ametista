@@ -41,12 +41,3 @@ next-env.d.ts
 #LOGS
 combined.log
 error.log
-
-
-
-.nx/cache
-.nx/workspace-data
-
-# Next.js
-.next
-out
