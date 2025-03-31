@@ -30,6 +30,7 @@ export function DashboardCharts() {
       now.getMonth() - monthsAgo + 1,
       0,
     )
+    endOfMonth.setHours(23, 59, 59, 999)
 
     const response = await getTotalForTheSelectedPeriod(
       transactionType,
