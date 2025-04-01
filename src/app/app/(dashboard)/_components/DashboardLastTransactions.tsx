@@ -60,7 +60,7 @@ export function DashboardLastTransactions() {
         </>
       )}
 
-      {!transactions && (
+      {transactions.length === 0 && (
         <div>
           <CardHeader className="-ml-5">
             <CardTitle>Últimas Transações</CardTitle>

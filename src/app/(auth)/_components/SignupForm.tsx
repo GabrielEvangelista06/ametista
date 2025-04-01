@@ -45,13 +45,13 @@ export function SignupForm() {
   })
 
   const onSubmit = async (data: Input) => {
-    const respose = await api.post('/user', {
+    const response = await api.post('/user', {
       username: data.username,
       email: data.email,
       password: data.password,
     })
 
-    if (respose.status !== 201) {
+    if (response.status !== 201) {
       toast({
         title: 'Erro ao realizar login',
         description: 'Ops! Algo deu errado ao realizar login. Tente novamente.',

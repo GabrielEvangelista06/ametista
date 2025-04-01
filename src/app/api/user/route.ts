@@ -65,7 +65,10 @@ export async function POST(req: Request) {
   } catch (error) {
     return NextResponse.json(
       {
-        message: error,
+        message:
+          error instanceof Error
+            ? error.message
+            : 'An unexpected error occurred.',
       },
       { status: 500 },
     )
