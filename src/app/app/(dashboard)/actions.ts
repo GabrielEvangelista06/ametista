@@ -311,7 +311,7 @@ export async function getPercentageOfExpensesByCategory(
             (defaultCategory) => defaultCategory.id === expense.categoryId,
           ) ||
           userCategories.find(
-            (userCategory) => userCategory.id === expense.categoryId,
+            (userCategory: any) => userCategory.id === expense.categoryId,
           )
 
         if (foundCategory) {
