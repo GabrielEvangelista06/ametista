@@ -153,7 +153,8 @@ export async function getThreeLastTransactions(
 
     const categories = await getUserCategories()
 
-    const enrichedTransactions = transactions.map((transaction) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const enrichedTransactions = transactions.map((transaction: any) => {
       const categoryName =
         defaultCategories.find(
           (category) => category.id === transaction?.categoryId,
