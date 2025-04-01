@@ -172,7 +172,7 @@ export async function markBillAsPaid(input: z.infer<typeof payBillSchema>) {
   }
 
   const transactionsIds = transactionsForBill.map(
-    (transaction) => transaction.id,
+    (transaction: any) => transaction.id,
   )
 
   const updatedTransactions = await db.transaction.updateMany({
