@@ -325,8 +325,8 @@ const checkAndCreateNextBills = async (): Promise<void> => {
     const today = new Date()
 
     const createBillPromises = cards
-      .filter((card) => isCardClosingDay(card, today))
-      .map((card) => createNextBill(card))
+      .filter((card: any) => isCardClosingDay(card, today))
+      .map((card: any) => createNextBill(card))
 
     await Promise.all(createBillPromises)
 
