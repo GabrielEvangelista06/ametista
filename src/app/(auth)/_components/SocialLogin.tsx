@@ -13,9 +13,7 @@ export function SocialLogin({ labelGoogle }: SocialLoginProps) {
   const loginWithGoogle = async () => {
     try {
       setIsLoading(true)
-      const callbackUrl =
-        process.env.NEXT_PUBLIC_CALLBACK_URL ||
-        'https://ametista-nextjs.3vbbk5.easypanel.host/app'
+      const callbackUrl = process.env.NEXT_PUBLIC_CALLBACK_URL
       await signIn('google', { callbackUrl })
     } finally {
       setIsLoading(false)
