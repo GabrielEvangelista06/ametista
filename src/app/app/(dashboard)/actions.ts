@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
 import { getServerSession } from 'next-auth'
@@ -153,14 +154,14 @@ export async function getThreeLastTransactions(
 
     const categories = await getUserCategories()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const enrichedTransactions = transactions.map((transaction: any) => {
       const categoryName =
         defaultCategories.find(
           (category) => category.id === transaction?.categoryId,
         )?.name ??
-        categories.find((category) => category.id === transaction?.categoryId)
-          ?.name ??
+        categories.find(
+          (category: any) => category.id === transaction?.categoryId,
+        )?.name ??
         ''
 
       return {
