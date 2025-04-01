@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
 import { getServerSession } from 'next-auth'
@@ -30,13 +31,13 @@ export async function getUserBillsByCardIds() {
   const bills = await db.bill.findMany({
     where: {
       cardId: {
-        in: cards.map((card) => card.id),
+        in: cards.map((card: any) => card.id),
       },
     },
   })
 
-  return bills.map((bill) => {
-    const card = cards.find((card) => card.id === bill.cardId)
+  return bills.map((bill: any) => {
+    const card = cards.find((card: any) => card.id === bill.cardId)
     return {
       ...bill,
       cardId: card ? card.description : 'Card not found',
@@ -66,7 +67,8 @@ export async function getBillTransactions(billId: string) {
 
       if (transaction.categoryId) {
         const foundCategory = defaultCategories.find(
-          (defaultCategory) => defaultCategory.id === transaction.categoryId,
+          (defaultCategory: any) =>
+            defaultCategory.id === transaction.categoryId,
         ) as { id: string; name: string } | undefined
 
         if (foundCategory) {
