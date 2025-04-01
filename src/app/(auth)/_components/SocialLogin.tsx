@@ -16,8 +16,6 @@ export function SocialLogin({ labelGoogle }: SocialLoginProps) {
       const callbackUrl =
         process.env.NEXT_PUBLIC_CALLBACK_URL || 'http://localhost:3000/app'
       await signIn('google', { callbackUrl })
-    } catch (error) {
-      setIsLoading(false)
     } finally {
       setIsLoading(false)
     }

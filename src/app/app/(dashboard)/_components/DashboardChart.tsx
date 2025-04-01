@@ -121,7 +121,7 @@ export function DashboardCharts() {
             <CardTitle>Resumo Financeiro</CardTitle>
           </CardHeader>
           <AreaChart
-            data={chartdata.reverse()}
+            data={[...chartdata].reverse()}
             index="date"
             categories={['Receitas', 'Despesas']}
             colors={['indigo', 'rose']}
