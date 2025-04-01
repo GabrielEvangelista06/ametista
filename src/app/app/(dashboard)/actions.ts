@@ -302,7 +302,7 @@ export async function getPercentageOfExpensesByCategory(
 
     const userCategories = await getUserCategories()
 
-    const categoryPercentages = expensesByCategory.map((expense) => {
+    const categoryPercentages = expensesByCategory.map((expense: any) => {
       let categoryName = 'Sem categoria'
 
       if (expense.categoryId) {
