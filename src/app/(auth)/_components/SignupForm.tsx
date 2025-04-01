@@ -53,8 +53,8 @@ export function SignupForm() {
 
     if (response.status !== 201) {
       toast({
-        title: 'Erro ao realizar login',
-        description: 'Ops! Algo deu errado ao realizar login. Tente novamente.',
+        title: 'Erro ao criar conta',
+        description: 'Ops! Algo deu errado ao criar conta. Tente novamente.',
         variant: 'destructive',
       })
     } else {
