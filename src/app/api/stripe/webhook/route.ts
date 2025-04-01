@@ -30,5 +30,8 @@ export async function POST(req: Request) {
       console.log(`Unhandled event type ${event.type}`)
   }
 
-  return new Response('{ "received": true }', { status: 200 })
+  return new Response('{ "received": true }', {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  })
 }
