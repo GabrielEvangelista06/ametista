@@ -213,7 +213,7 @@ export function Header() {
 
         <a
           className="hidden border-l-[1px] border-border pl-4 pr-2 text-sm font-medium md:block"
-          href="https://app.ametista.io"
+          href="/login"
         >
           Entrar
         </a>
