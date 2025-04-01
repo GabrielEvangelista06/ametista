@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
 import { getServerSession } from 'next-auth'
@@ -154,14 +153,13 @@ export async function getThreeLastTransactions(
 
     const categories = await getUserCategories()
 
-    const enrichedTransactions = transactions.map((transaction: any) => {
+    const enrichedTransactions = transactions.map((transaction) => {
       const categoryName =
         defaultCategories.find(
           (category) => category.id === transaction?.categoryId,
         )?.name ??
-        categories.find(
-          (category: any) => category.id === transaction?.categoryId,
-        )?.name ??
+        categories.find((category) => category.id === transaction?.categoryId)
+          ?.name ??
         ''
 
       return {
@@ -287,7 +285,7 @@ export async function getPercentageOfExpensesByCategory(
 
     const totalExpense = expensesByCategory.reduce(
       /* eslint-disable @typescript-eslint/no-explicit-any */
-      (sum: any, category: any) => sum + (category._sum?.amount || 0),
+      (sum, category) => sum + (category._sum?.amount || 0),
       0,
     )
 
@@ -302,7 +300,7 @@ export async function getPercentageOfExpensesByCategory(
 
     const userCategories = await getUserCategories()
 
-    const categoryPercentages = expensesByCategory.map((expense: any) => {
+    const categoryPercentages = expensesByCategory.map((expense) => {
       let categoryName = 'Sem categoria'
 
       if (expense.categoryId) {
@@ -311,7 +309,7 @@ export async function getPercentageOfExpensesByCategory(
             (defaultCategory) => defaultCategory.id === expense.categoryId,
           ) ||
           userCategories.find(
-            (userCategory: any) => userCategory.id === expense.categoryId,
+            (userCategory) => userCategory.id === expense.categoryId,
           )
 
         if (foundCategory) {

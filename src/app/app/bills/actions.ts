@@ -31,13 +31,13 @@ export async function getUserBillsByCardIds() {
   const bills = await db.bill.findMany({
     where: {
       cardId: {
-        in: cards.map((card: any) => card.id),
+        in: cards.map((card) => card.id),
       },
     },
   })
 
-  return bills.map((bill: any) => {
-    const card = cards.find((card: any) => card.id === bill.cardId)
+  return bills.map((bill) => {
+    const card = cards.find((card) => card.id === bill.cardId)
     return {
       ...bill,
       cardId: card ? card.description : 'Card not found',
@@ -62,13 +62,12 @@ export async function getBillTransactions(billId: string) {
   }
 
   const transactionsWithCategory = await Promise.all(
-    billWithTransactions.transactions.map(async (transaction: any) => {
+    billWithTransactions.transactions.map(async (transaction) => {
       let category = 'Sem categoria'
 
       if (transaction.categoryId) {
         const foundCategory = defaultCategories.find(
-          (defaultCategory: any) =>
-            defaultCategory.id === transaction.categoryId,
+          (defaultCategory) => defaultCategory.id === transaction.categoryId,
         ) as { id: string; name: string } | undefined
 
         if (foundCategory) {
@@ -172,7 +171,7 @@ export async function markBillAsPaid(input: z.infer<typeof payBillSchema>) {
   }
 
   const transactionsIds = transactionsForBill.map(
-    (transaction: any) => transaction.id,
+    (transaction) => transaction.id,
   )
 
   const updatedTransactions = await db.transaction.updateMany({
@@ -325,8 +324,8 @@ const checkAndCreateNextBills = async (): Promise<void> => {
     const today = new Date()
 
     const createBillPromises = cards
-      .filter((card: any) => isCardClosingDay(card, today))
-      .map((card: any) => createNextBill(card))
+      .filter((card) => isCardClosingDay(card, today))
+      .map((card) => createNextBill(card))
 
     await Promise.all(createBillPromises)
 

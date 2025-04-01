@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
 import { getServerSession } from 'next-auth'
@@ -24,7 +23,7 @@ export async function getUserCards() {
   })
 
   const cardsWithBankInfo = await Promise.all(
-    cards.map(async (card: any) => {
+    cards.map(async (card) => {
       let bankInfoName = 'Sem informação do banco'
 
       if (card.bankInfoId) {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
 import { getServerSession } from 'next-auth'
@@ -19,7 +18,7 @@ export async function getUserBankInfos() {
   })
 
   const enrichedBankInfos = await Promise.all(
-    bankInfos.map(async (bankInfo: any) => {
+    bankInfos.map(async (bankInfo) => {
       const transactions = await db.transaction.findMany({
         where: { bankInfoId: bankInfo.id },
         orderBy: { date: 'desc' },
@@ -32,7 +31,7 @@ export async function getUserBankInfos() {
         transferCount: 0,
       }
 
-      transactions.forEach((transaction: any) => {
+      transactions.forEach((transaction) => {
         if (transaction.type === TransactionTypes.INCOME) {
           transactionCounts.incomeCount++
         } else if (transaction.type === TransactionTypes.EXPENSE) {
