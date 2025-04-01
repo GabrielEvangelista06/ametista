@@ -287,7 +287,7 @@ export async function getPercentageOfExpensesByCategory(
 
     const totalExpense = expensesByCategory.reduce(
       /* eslint-disable @typescript-eslint/no-explicit-any */
-      (sum: any, category) => sum + (category._sum?.amount || 0),
+      (sum: any, category: any) => sum + (category._sum?.amount || 0),
       0,
     )
 
