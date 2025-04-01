@@ -62,7 +62,7 @@ export async function getBillTransactions(billId: string) {
   }
 
   const transactionsWithCategory = await Promise.all(
-    billWithTransactions.transactions.map(async (transaction) => {
+    billWithTransactions.transactions.map(async (transaction: any) => {
       let category = 'Sem categoria'
 
       if (transaction.categoryId) {
