@@ -153,8 +153,7 @@ export async function getThreeLastTransactions(
 
     const categories = await getUserCategories()
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const enrichedTransactions = transactions.map((transaction: any) => {
+    const enrichedTransactions = transactions.map((transaction) => {
       const categoryName =
         defaultCategories.find(
           (category) => category.id === transaction?.categoryId,
@@ -285,6 +284,7 @@ export async function getPercentageOfExpensesByCategory(
     }
 
     const totalExpense = expensesByCategory.reduce(
+      /* eslint-disable @typescript-eslint/no-explicit-any */
       (sum, category) => sum + (category._sum?.amount || 0),
       0,
     )
